@@ -208,6 +208,12 @@ const defaults = {
     rutube: {
       embed: 'https://rutube.ru/play/embed/{0}',
     },
+    yandex: {
+      embed: 'https://video.cloud.yandex.net/player/{0}',
+    },
+    vk: {
+      embed: 'https://vk.ru/video_ext.php?{0}&js_api=1',
+    },
     googleIMA: {
       sdk: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
     },
@@ -452,6 +458,24 @@ const defaults = {
     quality: null, // Initial quality (e.g. 360, 480, 720, 1080)
     skinColor: null, // Interface color in HEX (e.g. 'e53935')
     stopTime: null, // Stop playback at this time (seconds)
+  },
+
+  // Yandex Cloud Video plugin
+  yandex: {
+    // Custom settings from Plyr
+    customControls: true,
+    autoplay: false,
+    muted: false,
+    loop: false,
+  },
+
+  // VK Video plugin
+  vk: {
+    // Custom settings from Plyr
+    customControls: true,
+    autoplay: false,
+    hd: null, // Video quality: 1=360p, 2=480p, 3=720p, 4=1080p
+    startTime: null, // Start time in format: 00h00m00s
   },
 
   // Media Metadata

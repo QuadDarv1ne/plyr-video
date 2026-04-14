@@ -7,6 +7,8 @@ export const providers = {
   youtube: 'youtube',
   vimeo: 'vimeo',
   rutube: 'rutube',
+  yandex: 'yandex',
+  vk: 'vk',
 };
 
 export const types = {
@@ -32,6 +34,16 @@ export function getProviderByUrl(url) {
   // Rutube
   if (/rutube\.ru\/(?:play\/embed\/|video\/|embed\/)/.test(url)) {
     return providers.rutube;
+  }
+
+  // Yandex Cloud Video
+  if (/video\.cloud\.yandex\.net\/player\/|cloud\.yandex\.ru.*video\//.test(url)) {
+    return providers.yandex;
+  }
+
+  // VK Video
+  if (/vk\.com\/video|vk\.ru\/video/.test(url)) {
+    return providers.vk;
   }
 
   return null;

@@ -4,7 +4,9 @@
 
 import html5 from './html5';
 import rutube from './plugins/rutube';
+import vk from './plugins/vk-video';
 import vimeo from './plugins/vimeo';
+import yandex from './plugins/yandex-video';
 import youtube from './plugins/youtube';
 import { createElement, toggleClass, wrap } from './utils/elements';
 
@@ -58,6 +60,12 @@ const media = {
     }
     else if (this.isRutube) {
       rutube.setup.call(this);
+    }
+    else if (this.isYandexCloud) {
+      yandex.setup.call(this);
+    }
+    else if (this.isVK) {
+      vk.setup.call(this);
     }
   },
 };

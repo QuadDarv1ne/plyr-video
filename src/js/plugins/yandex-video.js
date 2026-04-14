@@ -1,5 +1,5 @@
 // ==========================================================================
-// Rutube plugin
+// Yandex Cloud Video plugin
 // ==========================================================================
 
 import captions from '../captions';
@@ -12,14 +12,16 @@ import sendCommand from '../utils/post-message';
 import { generateId } from '../utils/strings';
 import { setAspectRatio } from '../utils/style';
 
-// Parse Rutube ID from URL
+// Parse Yandex Cloud Video ID from URL
 function parseId(url) {
   if (is.empty(url)) {
     return null;
   }
 
-  // Match various Rutube URL formats
-  const regex = /rutube\.ru\/(?:play\/embed\/|video\/|embed\/)([a-f0-9]+)(?:\/)?/i;
+  // Match various Yandex Cloud Video URL formats
+  // https://video.cloud.yandex.net/player/{videoId}
+  // https://cloud.yandex.ru/services/video/{videoId}
+  const regex = /(?:video\.cloud\.yandex\.net\/player\/|cloud\.yandex\.ru.*video\/)([a-f0-9-]+)/i;
   const match = url.match(regex);
   return match && match[1] ? match[1] : url;
 }
@@ -35,7 +37,7 @@ function assurePlaybackState(play) {
   }
 }
 
-const rutube = {
+const yandex = {
   setup() {
     const player = this;
 
@@ -49,19 +51,18 @@ const rutube = {
     setAspectRatio.call(player);
 
     // Setup ready
-    rutube.ready.call(player);
+    yandex.ready.call(player);
   },
 
   // Get the media title
   getTitle(videoId) {
-    // Rutube doesn't have a public oEmbed API like YouTube/Vimeo
-    // We try to fetch metadata from rutube.ru/api/video/{videoId}
-    const url = `https://rutube.ru/api/video/${videoId}/`;
+    // Yandex Cloud Video API endpoint for metadata
+    const url = `https://video.cloud.yandex.net/api/v1/videos/${videoId}`;
 
     fetch(url)
       .then((data) => {
-        if (is.object(data) && data.title) {
-          this.config.title = data.title;
+        if (is.object(data) && data.name) {
+          this.config.title = data.name;
           ui.setTitle.call(this);
         }
       })
@@ -73,7 +74,7 @@ const rutube = {
   // API Ready
   ready() {
     const player = this;
-    const config = player.config.rutube;
+    const config = player.config.yandex;
 
     // Get the source URL or ID
     let source = player.media.getAttribute('src');
@@ -92,22 +93,19 @@ const rutube = {
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer');
 
-    // Build Rutube embed URL
-    const embedUrl = `https://rutube.ru/play/embed/${videoId}/`;
+    // Build Yandex Cloud Video embed URL
+    const embedUrl = `https://video.cloud.yandex.net/player/${videoId}`;
     const params = [];
 
     // Add optional parameters
     if (config.autoplay) {
       params.push('autoplay=true');
     }
-    if (config.quality) {
-      params.push(`q=${config.quality}`);
+    if (config.muted) {
+      params.push('muted=true');
     }
-    if (config.skinColor) {
-      params.push(`skinColor=${config.skinColor}`);
-    }
-    if (config.stopTime) {
-      params.push(`stopTime=${config.stopTime}`);
+    if (config.loop) {
+      params.push('loop=true');
     }
 
     iframe.setAttribute('src', `${embedUrl}?${params.join('&')}`);
@@ -121,19 +119,6 @@ const rutube = {
 
     // Replace media element
     player.media = replaceElement(wrapper, player.media);
-
-    // Set poster if custom controls
-    if (config.customControls && player.poster) {
-      // Try to load poster from Rutube
-      const posterUrl = `https://rutube.ru/api/video/${videoId}/`;
-      fetch(posterUrl)
-        .then((data) => {
-          if (data && data.thumbnail_url) {
-            ui.setPoster.call(player, data.thumbnail_url).catch(() => {});
-          }
-        })
-        .catch(() => {});
-    }
 
     // Store iframe reference
     player.embed = {
@@ -153,7 +138,7 @@ const rutube = {
     // Setup postMessage listener
     player.embed.messageHandler = (event) => {
       // Validate origin
-      if (!event.origin.includes('rutube.ru')) {
+      if (!event.origin.includes('cloud.yandex') && !event.origin.includes('yandexcloud.net')) {
         return;
       }
 
@@ -169,12 +154,12 @@ const rutube = {
         return;
       }
 
-      rutube.handleMessage.call(player, msg);
+      yandex.handleMessage.call(player, msg);
     };
 
     window.addEventListener('message', player.embed.messageHandler);
 
-    // Create a faux HTML5 API using the Rutube API
+    // Create a faux HTML5 API using the Yandex Cloud Video API
     player.media.play = () => {
       assurePlaybackState.call(player, true);
       sendCommand(player, 'player:play');
@@ -251,7 +236,7 @@ const rutube = {
     // Source
     Object.defineProperty(player.media, 'currentSrc', {
       get() {
-        return `https://rutube.ru/play/embed/${videoId}/`;
+        return `https://video.cloud.yandex.net/player/${videoId}`;
       },
     });
 
@@ -287,7 +272,7 @@ const rutube = {
     });
 
     // Get title
-    rutube.getTitle.call(player, videoId);
+    yandex.getTitle.call(player, videoId);
 
     // Request available qualities
     setTimeout(() => {
@@ -305,7 +290,7 @@ const rutube = {
     }
   },
 
-  // Handle postMessage events from Rutube
+  // Handle postMessage events from Yandex Cloud Video
   handleMessage(msg) {
     const player = this;
     const { type, data } = msg;
@@ -313,7 +298,7 @@ const rutube = {
     switch (type) {
       case 'player:ready':
         // Player is ready
-        player.debug.log('Rutube player ready');
+        player.debug.log('Yandex Cloud Video player ready');
         triggerEvent.call(player, player.media, 'timeupdate');
         break;
 
@@ -464,14 +449,10 @@ const rutube = {
         }
         break;
 
-      case 'player:captionChange':
-        player.debug.log('Rutube caption track changed');
-        break;
-
       case 'player:error':
         player.media.error = {
           code: data && data.type ? data.type : 1,
-          message: (data && data.message) || 'Rutube playback error',
+          message: (data && data.message) || 'Yandex Cloud Video playback error',
         };
         triggerEvent.call(player, player.media, 'error');
         break;
@@ -484,7 +465,7 @@ const rutube = {
       default:
         // Debug unknown events
         if (player.config.debug) {
-          player.debug.log('Rutube unknown event:', type, data);
+          player.debug.log('Yandex Cloud Video unknown event:', type, data);
         }
         break;
     }
@@ -500,4 +481,4 @@ const rutube = {
   },
 };
 
-export default rutube;
+export default yandex;

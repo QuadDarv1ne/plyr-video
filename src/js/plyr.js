@@ -17,6 +17,8 @@ import Listeners from './listeners';
 import media from './media';
 import Ads from './plugins/ads';
 import PreviewThumbnails from './plugins/preview-thumbnails';
+import vk from './plugins/vk-video';
+import yandex from './plugins/yandex-video';
 import source from './source';
 import Storage from './storage';
 import support from './support';
@@ -335,7 +337,7 @@ class Plyr {
   }
 
   get isEmbed() {
-    return this.isYouTube || this.isVimeo || this.isRutube;
+    return this.isYouTube || this.isVimeo || this.isRutube || this.isYandexCloud || this.isVK;
   }
 
   get isYouTube() {
@@ -348,6 +350,14 @@ class Plyr {
 
   get isRutube() {
     return this.provider === providers.rutube;
+  }
+
+  get isYandexCloud() {
+    return this.provider === providers.yandex;
+  }
+
+  get isVK() {
+    return this.provider === providers.vk;
   }
 
   get isVideo() {
@@ -1250,6 +1260,24 @@ class Plyr {
     }
     else if (this.isRutube) {
       // Destroy Rutube message listener
+      if (this.embed !== null && is.function(this.embed.destroy)) {
+        this.embed.destroy();
+      }
+
+      // Clean up
+      done();
+    }
+    else if (this.isYandexCloud) {
+      // Destroy Yandex Cloud Video message listener
+      if (this.embed !== null && is.function(this.embed.destroy)) {
+        this.embed.destroy();
+      }
+
+      // Clean up
+      done();
+    }
+    else if (this.isVK) {
+      // Destroy VK Video message listener
       if (this.embed !== null && is.function(this.embed.destroy)) {
         this.embed.destroy();
       }

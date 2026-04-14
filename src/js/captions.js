@@ -5,7 +5,7 @@
 
 import controls from './controls';
 import support from './support';
-import { sendCommand as sendRutubeCommand } from './plugins/rutube';
+import sendCommand from './utils/post-message';
 import { dedupe } from './utils/arrays';
 import browser from './utils/browser';
 import {
@@ -45,8 +45,8 @@ const captions = {
       return;
     }
 
-    // For embeds (Vimeo, Rutube), wait for tracks to be available
-    if (this.isVimeo || this.isRutube) {
+    // For embeds (Vimeo, Rutube, Yandex), wait for tracks to be available
+    if (this.isVimeo || this.isRutube || this.isYandexCloud) {
       // Captions will be setup when tracks are loaded from the embed API
       return;
     }
@@ -286,7 +286,16 @@ const captions = {
         // Send command to Rutube to enable the caption track
         const rutubeTrack = this.embed.captionTracks && this.embed.captionTracks[index];
         if (rutubeTrack) {
-          sendRutubeCommand(this, 'player:setCaption', { id: rutubeTrack.id, enabled: true });
+          sendCommand(this, 'player:setCaption', { id: rutubeTrack.id, enabled: true });
+        }
+      }
+
+      // Handle Yandex Cloud Video captions
+      if (this.isYandexCloud) {
+        // Send command to Yandex to enable the caption track
+        const yandexTrack = this.embed.captionTracks && this.embed.captionTracks[index];
+        if (yandexTrack) {
+          sendCommand(this, 'player:setCaption', { id: yandexTrack.id, enabled: true });
         }
       }
 
