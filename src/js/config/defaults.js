@@ -205,6 +205,9 @@ const defaults = {
       sdk: 'https://www.youtube.com/iframe_api',
       api: 'https://noembed.com/embed?url=https://www.youtube.com/watch?v={0}',
     },
+    rutube: {
+      embed: 'https://rutube.ru/play/embed/{0}',
+    },
     googleIMA: {
       sdk: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
     },
@@ -439,6 +442,16 @@ const defaults = {
     // Custom settings from Plyr
     customControls: true,
     noCookie: false, // Whether to use an alternative version of YouTube without cookies
+  },
+
+  // Rutube plugin
+  rutube: {
+    // Custom settings from Plyr
+    customControls: true,
+    autoplay: false,
+    quality: null, // Initial quality (e.g. 360, 480, 720, 1080)
+    skinColor: null, // Interface color in HEX (e.g. 'e53935')
+    stopTime: null, // Stop playback at this time (seconds)
   },
 
   // Media Metadata

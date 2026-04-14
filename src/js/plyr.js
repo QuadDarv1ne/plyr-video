@@ -335,7 +335,7 @@ class Plyr {
   }
 
   get isEmbed() {
-    return this.isYouTube || this.isVimeo;
+    return this.isYouTube || this.isVimeo || this.isRutube;
   }
 
   get isYouTube() {
@@ -344,6 +344,10 @@ class Plyr {
 
   get isVimeo() {
     return this.provider === providers.vimeo;
+  }
+
+  get isRutube() {
+    return this.provider === providers.rutube;
   }
 
   get isVideo() {
@@ -705,6 +709,11 @@ class Plyr {
       return 0.5;
     }
 
+    if (this.isRutube) {
+      // Rutube supports 0.25x-2x
+      return 0.25;
+    }
+
     // https://stackoverflow.com/a/32320020/1191319
     return 0.0625;
   }
@@ -720,6 +729,11 @@ class Plyr {
 
     if (this.isVimeo) {
       // https://github.com/vimeo/player.js/#setplaybackrateplaybackrate-number-promisenumber-rangeerrorerror
+      return 2;
+    }
+
+    if (this.isRutube) {
+      // Rutube supports up to 2x
       return 2;
     }
 
@@ -1233,6 +1247,15 @@ class Plyr {
 
       // Vimeo does not always return
       setTimeout(done, 200);
+    }
+    else if (this.isRutube) {
+      // Destroy Rutube message listener
+      if (this.embed !== null && is.function(this.embed.destroy)) {
+        this.embed.destroy();
+      }
+
+      // Clean up
+      done();
     }
   };
 
