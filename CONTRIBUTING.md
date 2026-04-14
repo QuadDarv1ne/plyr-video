@@ -4,7 +4,7 @@ We welcome bug reports, feature requests and pull requests. If you want to help 
 
 ## Support
 
-Before asking questions, read our [documentation](https://github.com/sampotts/plyr) and [FAQ](https://github.com/sampotts/plyr/wiki/FAQ).
+Before asking questions, read our [documentation](https://github.com/QuadDarv1ne/plyr-video) and [FAQ](https://github.com/QuadDarv1ne/plyr-video/wiki/FAQ).
 
 If these doesn't answer your question
 

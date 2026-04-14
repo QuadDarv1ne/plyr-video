@@ -1,7 +1,7 @@
 // ==========================================================================
 // Plyr
 // plyr.js v3.8.4
-// https://github.com/sampotts/plyr
+// https://github.com/QuadDarv1ne/plyr-video
 // License: The MIT License (MIT)
 // ==========================================================================
 

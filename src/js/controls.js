@@ -121,7 +121,7 @@ const controls = {
     const path = `${iconPath}-${type}`;
 
     // Set `href` attributes
-    // https://github.com/sampotts/plyr/issues/460
+    // https://github.com/QuadDarv1ne/plyr-video/issues/460
     // https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/xlink:href
     if ('href' in use) {
       use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', path);
@@ -321,7 +321,7 @@ const controls = {
           'step': 0.01,
           'value': 0,
           'autocomplete': 'off',
-          // A11y fixes for https://github.com/sampotts/plyr/issues/905
+          // A11y fixes for https://github.com/QuadDarv1ne/plyr-video/issues/905
           'role': 'slider',
           'aria-label': i18n.get(type, this.config),
           'aria-valuemin': 0,
@@ -662,7 +662,7 @@ const controls = {
       return;
     }
 
-    // Set aria values for https://github.com/sampotts/plyr/issues/905
+    // Set aria values for https://github.com/QuadDarv1ne/plyr-video/issues/905
     if (matches(range, this.config.selectors.inputs.seek)) {
       range.setAttribute('aria-valuenow', this.currentTime);
       const currentTime = controls.formatTime(this.currentTime);

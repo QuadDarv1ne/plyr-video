@@ -410,7 +410,7 @@ const youtube = {
                 }, 50);
 
                 // Check duration again due to YouTube bug
-                // https://github.com/sampotts/plyr/issues/374
+                // https://github.com/QuadDarv1ne/plyr-video/issues/374
                 // https://code.google.com/p/gdata-issues/issues/detail?id=8690
                 if (player.media.duration !== instance.getDuration()) {
                   player.media.duration = instance.getDuration();

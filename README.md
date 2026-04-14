@@ -2,7 +2,7 @@ Plyr is a simple, lightweight, accessible and customizable HTML5, YouTube and Vi
 
 [Checkout the demo](https://plyr.io) - [Donate](#donate) - [Slack](https://bit.ly/plyr--chat) - [Video hosting](https://mux.com?ref=plyr-github)
 
-[![npm version](https://badge.fury.io/js/plyr.svg)](https://badge.fury.io/js/plyr) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/sampotts/plyr) [![Financial Contributors on Open Collective](https://opencollective.com/plyr/all/badge.svg?label=financial+contributors)](https://opencollective.com/plyr)
+[![npm version](https://badge.fury.io/js/plyr.svg)](https://badge.fury.io/js/plyr) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/QuadDarv1ne/plyr-video) [![Financial Contributors on Open Collective](https://opencollective.com/plyr/all/badge.svg?label=financial+contributors)](https://opencollective.com/plyr)
 
 [![Screenshot of Plyr](https://cdn.plyr.io/static/screenshot.webp)](https://plyr.io)
 
@@ -51,7 +51,7 @@ Plyr extends upon the standard [HTML5 media element](https://developer.mozilla.o
 </video>
 ```
 
-**Note**: The poster image should be specified using `data-poster`. This is to prevent it [being downloaded twice](https://github.com/sampotts/plyr/issues/1531). If you're sure the image will be cached, you can still use the `poster` attribute for true progressive enhancement.
+**Note**: The poster image should be specified using `data-poster`. This is to prevent it [being downloaded twice](https://github.com/QuadDarv1ne/plyr-video/issues/1531). If you're sure the image will be cached, you can still use the `poster` attribute for true progressive enhancement.
 
 ### HTML5 Audio
 
@@ -826,8 +826,8 @@ If you find anything weird with Plyr, please let us know using the GitHub issues
 
 # Author
 
-Plyr is developed by [@sam_potts](https://twitter.com/sam_potts) / [sampotts.me](http://sampotts.me) with help from the awesome
-[contributors](https://github.com/sampotts/plyr/graphs/contributors)
+Plyr is developed by Dupley Maxim Igorevich with help from the awesome
+[contributors](https://github.com/QuadDarv1ne/plyr-video/graphs/contributors)
 
 # Donate
 
@@ -888,7 +888,7 @@ If you want to be added to the list, open a pull request. It'd be awesome to see
 
 This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
 
-<a href="https://github.com/sampotts/plyr/graphs/contributors"><img src="https://opencollective.com/plyr/contributors.svg?width=890&button=false" /></a>
+<a href="https://github.com/QuadDarv1ne/plyr-video/graphs/contributors"><img src="https://opencollective.com/plyr/contributors.svg?width=890&button=false" /></a>
 
 ### Financial Contributors
 

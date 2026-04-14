@@ -17,7 +17,7 @@ class Storage {
       if (!('localStorage' in window)) return false;
       const test = '___test';
       // Try to use it (it might be disabled, e.g. user is in private mode)
-      // see: https://github.com/sampotts/plyr/issues/131
+      // see: https://github.com/QuadDarv1ne/plyr-video/issues/131
       window.localStorage.setItem(test, test);
       window.localStorage.removeItem(test);
       return true;

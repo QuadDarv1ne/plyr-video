@@ -3,15 +3,15 @@
   "type": "module",
   "version": "3.8.4",
   "description": "A simple, accessible and customizable HTML5, YouTube and Vimeo media player",
-  "author": "Sam Potts <sam@potts.es>",
+  "author": "Dupley Maxim Igorevich",
   "license": "MIT",
   "homepage": "https://plyr.io",
   "repository": {
     "type": "git",
-    "url": "git://github.com/sampotts/plyr.git"
+    "url": "git://github.com/QuadDarv1ne/plyr-video.git"
   },
   "bugs": {
-    "url": "https://github.com/sampotts/plyr/issues"
+    "url": "https://github.com/QuadDarv1ne/plyr-video/issues"
   },
   "keywords": [
     "HTML5 Video",
@@ -41,7 +41,7 @@
     "build": "gulp build",
     "lint": "stylelint **/*.scss && eslint src demo && pnpm remark",
     "lint:fix": "stylelint **/*.scss --fix && eslint src demo --fix",
-    "remark": "remark -f --use 'validate-links=repository:\"sampotts/plyr\"' '{,!(node_modules),.?**/}*.md'",
+    "remark": "remark -f --use 'validate-links=repository:\"QuadDarv1ne/plyr-video\"' '{,!(node_modules),.?**/}*.md'",
     "deploy": "pnpm run lint && gulp prepare && gulp build && gulp deploy",
     "spellcheck": "cspell \"**/*.{js,md,scss,json}\" --no-must-find-files",
     "start": "gulp"

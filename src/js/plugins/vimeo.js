@@ -371,7 +371,7 @@ const vimeo = {
         const frame = player.embed.element;
 
         // Fix keyboard focus issues
-        // https://github.com/sampotts/plyr/issues/317
+        // https://github.com/QuadDarv1ne/plyr-video/issues/317
         frame.setAttribute('tabindex', -1);
       }
     });
@@ -409,7 +409,7 @@ const vimeo = {
       }
 
       // Get duration as if we do it before load, it gives an incorrect value
-      // https://github.com/sampotts/plyr/issues/891
+      // https://github.com/QuadDarv1ne/plyr-video/issues/891
       player.embed.getDuration().then((value) => {
         if (value !== player.media.duration) {
           player.media.duration = value;

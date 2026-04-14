@@ -145,7 +145,7 @@ const ui = {
     });
 
     // Set iframe title
-    // https://github.com/sampotts/plyr/issues/124
+    // https://github.com/QuadDarv1ne/plyr-video/issues/124
     if (this.isEmbed) {
       const iframe = getElement.call(this, 'iframe');
 
