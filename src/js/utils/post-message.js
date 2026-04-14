@@ -14,6 +14,13 @@ export function sendCommand(player, typeOrParams, data = {}) {
     return Promise.resolve(false);
   }
 
+  const { iframe } = player.embed;
+
+  // Check if iframe is still in DOM and accessible
+  if (!iframe.contentWindow) {
+    return Promise.resolve(false);
+  }
+
   let message;
   if (typeof typeOrParams === 'string') {
     message = JSON.stringify({ type: typeOrParams, data });
@@ -25,8 +32,14 @@ export function sendCommand(player, typeOrParams, data = {}) {
     return Promise.resolve(false);
   }
 
-  player.embed.iframe.contentWindow.postMessage(message, '*');
-  return Promise.resolve(true);
+  try {
+    iframe.contentWindow.postMessage(message, '*');
+    return Promise.resolve(true);
+  }
+  catch {
+    // iframe may have been removed or cross-origin restriction
+    return Promise.resolve(false);
+  }
 }
 
 export default sendCommand;
