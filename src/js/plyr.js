@@ -17,6 +17,7 @@ import Listeners from './listeners';
 import media from './media';
 import Ads from './plugins/ads';
 import PreviewThumbnails from './plugins/preview-thumbnails';
+import mailru from './plugins/mailru-video';
 import vk from './plugins/vk-video';
 import yandex from './plugins/yandex-video';
 import source from './source';
@@ -337,7 +338,7 @@ class Plyr {
   }
 
   get isEmbed() {
-    return this.isYouTube || this.isVimeo || this.isRutube || this.isYandexCloud || this.isVK;
+    return this.isYouTube || this.isVimeo || this.isRutube || this.isYandexCloud || this.isVK || this.isMailRu;
   }
 
   get isYouTube() {
@@ -358,6 +359,10 @@ class Plyr {
 
   get isVK() {
     return this.provider === providers.vk;
+  }
+
+  get isMailRu() {
+    return this.provider === providers.mailru;
   }
 
   get isVideo() {
@@ -1278,6 +1283,15 @@ class Plyr {
     }
     else if (this.isVK) {
       // Destroy VK Video message listener
+      if (this.embed !== null && is.function(this.embed.destroy)) {
+        this.embed.destroy();
+      }
+
+      // Clean up
+      done();
+    }
+    else if (this.isMailRu) {
+      // Destroy Mail.ru Video message listener
       if (this.embed !== null && is.function(this.embed.destroy)) {
         this.embed.destroy();
       }

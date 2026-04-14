@@ -214,6 +214,9 @@ const defaults = {
     vk: {
       embed: 'https://vk.ru/video_ext.php?{0}&js_api=1',
     },
+    mailru: {
+      embed: 'https://my.mail.ru/video/embed/{0}?wmode=opaque',
+    },
     googleIMA: {
       sdk: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
     },
@@ -476,6 +479,13 @@ const defaults = {
     autoplay: false,
     hd: null, // Video quality: 1=360p, 2=480p, 3=720p, 4=1080p
     startTime: null, // Start time in format: 00h00m00s
+  },
+
+  // Mail.ru Video plugin
+  mailru: {
+    // Custom settings from Plyr
+    customControls: true,
+    autoplay: false,
   },
 
   // Media Metadata

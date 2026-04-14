@@ -9,6 +9,7 @@ export const providers = {
   rutube: 'rutube',
   yandex: 'yandex',
   vk: 'vk',
+  mailru: 'mailru',
 };
 
 export const types = {
@@ -44,6 +45,11 @@ export function getProviderByUrl(url) {
   // VK Video
   if (/vk\.com\/video|vk\.ru\/video/.test(url)) {
     return providers.vk;
+  }
+
+  // Mail.ru Video
+  if (/my\.mail\.ru\/video|api\.video\.mail\.ru\/videos/.test(url)) {
+    return providers.mailru;
   }
 
   return null;

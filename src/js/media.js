@@ -3,6 +3,7 @@
 // ==========================================================================
 
 import html5 from './html5';
+import mailru from './plugins/mailru-video';
 import rutube from './plugins/rutube';
 import vk from './plugins/vk-video';
 import vimeo from './plugins/vimeo';
@@ -66,6 +67,9 @@ const media = {
     }
     else if (this.isVK) {
       vk.setup.call(this);
+    }
+    else if (this.isMailRu) {
+      mailru.setup.call(this);
     }
   },
 };

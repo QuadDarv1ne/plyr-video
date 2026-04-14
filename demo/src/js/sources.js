@@ -164,6 +164,17 @@ const sources = {
       },
     ],
   },
+
+  mailru: {
+    type: 'video',
+    ratio: '16:9',
+    sources: [
+      {
+        src: 'https://my.mail.ru/video/embed/your-video-id',
+        provider: 'mailru',
+      },
+    ],
+  },
 };
 
 export default sources;
