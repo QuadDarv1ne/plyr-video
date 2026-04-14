@@ -158,7 +158,7 @@ const vk = {
     // Setup postMessage listener
     player.embed.messageHandler = (event) => {
       // Validate origin
-      if (!event.origin.includes('vk.com') && !event.origin.includes('vk.ru')) {
+      if (!event.origin.includes('vk.com') && !event.origin.includes('vk.ru') && !event.origin.includes('userapi.com')) {
         return;
       }
 
@@ -175,18 +175,18 @@ const vk = {
     // Create a faux HTML5 API using the VK Video API
     player.media.play = () => {
       assurePlaybackState.call(player, true);
-      sendCommand(player, 'vk_video:play');
+      sendCommand(player, { method: 'play', params: [] });
     };
 
     player.media.pause = () => {
       assurePlaybackState.call(player, false);
-      sendCommand(player, 'vk_video:pause');
+      sendCommand(player, { method: 'pause', params: [] });
     };
 
     player.media.stop = () => {
       player.pause();
       player.currentTime = 0;
-      sendCommand(player, 'vk_video:stop');
+      sendCommand(player, { method: 'stop', params: [] });
     };
 
     // Seeking
@@ -202,10 +202,7 @@ const vk = {
         triggerEvent.call(player, media, 'seeking');
 
         // Send seek command
-        sendCommand(player, {
-          method: 'seek',
-          params: [time],
-        });
+        sendCommand(player, { method: 'seek', params: [time] });
       },
     });
 
@@ -229,10 +226,7 @@ const vk = {
       },
       set(input) {
         volume = input;
-        sendCommand(player, {
-          method: 'setVolume',
-          params: [input],
-        });
+        sendCommand(player, { method: 'setVolume', params: [input] });
         triggerEvent.call(player, player.media, 'volumechange');
       },
     });
@@ -246,7 +240,7 @@ const vk = {
       set(input) {
         const toggle = is.boolean(input) ? input : false;
         muted = toggle;
-        sendCommand(player, toggle ? 'vk_video:mute' : 'vk_video:unmute');
+        sendCommand(player, { method: toggle ? 'mute' : 'unmute', params: [] });
         triggerEvent.call(player, player.media, 'volumechange');
       },
     });
@@ -314,24 +308,37 @@ const vk = {
 
     // VK Video sends events as strings or objects
     // Handle both formats
-    let eventType = data;
+    let eventType = '';
     let eventData = {};
 
     if (is.string(data)) {
-      // String format: "vk_video:started", "vk_video:paused", etc.
-      if (data.startsWith('vk_video:')) {
+      // String format could be: "started", "paused", "ended", etc.
+      // Normalize: if it contains a colon, use as-is; otherwise prefix
+      if (data.includes(':')) {
         eventType = data;
       }
       else {
-        // Unknown string format
-        player.debug.log('VK Video unknown string event:', data);
-        return;
+        eventType = `vk_video:${data}`;
       }
     }
     else if (is.object(data)) {
       // Object format: { event: 'started', duration: 0, time: 0 }
-      eventType = `vk_video:${data.event}`;
-      eventData = data;
+      if (data.event) {
+        eventType = `vk_video:${data.event}`;
+        eventData = data;
+      }
+      else if (data.type) {
+        // Alternative format: { type: 'timeupdate', time: 10, duration: 60 }
+        eventType = `vk_video:${data.type}`;
+        eventData = data;
+      }
+      else {
+        // Unknown object format
+        if (player.config.debug) {
+          player.debug.log('VK Video unknown object event:', data);
+        }
+        return;
+      }
     }
     else {
       return;
