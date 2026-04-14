@@ -84,7 +84,13 @@ const yandex = {
       source = player.media.getAttribute(player.config.attributes.embed.id);
     }
 
+    // Parse and validate video ID
     const videoId = parseId(source);
+    if (is.empty(videoId)) {
+      player.debug.error('Yandex Cloud Video: No valid video ID found');
+      return;
+    }
+
     const id = generateId(player.provider);
 
     // Replace the <iframe> with a managed <iframe>
@@ -154,7 +160,12 @@ const yandex = {
         return;
       }
 
-      yandex.handleMessage.call(player, msg);
+      try {
+        yandex.handleMessage.call(player, msg);
+      }
+      catch (err) {
+        player.debug.error('Yandex Cloud Video: Error handling message:', err);
+      }
     };
 
     window.addEventListener('message', player.embed.messageHandler);

@@ -95,7 +95,13 @@ const vk = {
       source = player.media.getAttribute(player.config.attributes.embed.id);
     }
 
+    // Parse and validate video parameters
     const videoParams = parseId(source);
+    if (is.empty(videoParams)) {
+      player.debug.error('VK Video: No valid video ID found');
+      return;
+    }
+
     const id = generateId(player.provider);
 
     // Extract oid and videoId for title fetching
@@ -167,7 +173,12 @@ const vk = {
         return;
       }
 
-      vk.handleMessage.call(player, data);
+      try {
+        vk.handleMessage.call(player, data);
+      }
+      catch (err) {
+        player.debug.error('VK Video: Error handling message:', err);
+      }
     };
 
     window.addEventListener('message', player.embed.messageHandler);

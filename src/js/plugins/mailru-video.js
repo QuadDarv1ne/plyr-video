@@ -83,7 +83,13 @@ const mailru = {
       source = player.media.getAttribute(player.config.attributes.embed.id);
     }
 
+    // Parse and validate video ID
     const videoId = parseId(source);
+    if (is.empty(videoId)) {
+      player.debug.error('Mail.ru Video: No valid video ID found');
+      return;
+    }
+
     const id = generateId(player.provider);
 
     // Replace the <iframe> with a managed <iframe>
@@ -158,7 +164,12 @@ const mailru = {
       catch {
         // Mail.ru might send string events
         if (is.string(event.data)) {
-          mailru.handleStringEvent.call(player, event.data);
+          try {
+            mailru.handleStringEvent.call(player, event.data);
+          }
+          catch (err) {
+            player.debug.error('Mail.ru Video: Error handling string event:', err);
+          }
         }
         return;
       }
@@ -167,7 +178,12 @@ const mailru = {
         return;
       }
 
-      mailru.handleMessage.call(player, msg);
+      try {
+        mailru.handleMessage.call(player, msg);
+      }
+      catch (err) {
+        player.debug.error('Mail.ru Video: Error handling message:', err);
+      }
     };
 
     window.addEventListener('message', player.embed.messageHandler);

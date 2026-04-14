@@ -83,7 +83,13 @@ const rutube = {
       source = player.media.getAttribute(player.config.attributes.embed.id);
     }
 
+    // Parse and validate video ID
     const videoId = parseId(source);
+    if (is.empty(videoId)) {
+      player.debug.error('Rutube: No valid video ID found');
+      return;
+    }
+
     const id = generateId(player.provider);
 
     // Replace the <iframe> with a managed <iframe>
@@ -169,7 +175,12 @@ const rutube = {
         return;
       }
 
-      rutube.handleMessage.call(player, msg);
+      try {
+        rutube.handleMessage.call(player, msg);
+      }
+      catch (err) {
+        player.debug.error('Rutube: Error handling message:', err);
+      }
     };
 
     window.addEventListener('message', player.embed.messageHandler);
