@@ -1,8 +1,8 @@
 Plyr is a simple, lightweight, accessible and customizable HTML5, YouTube and Vimeo media player that supports [_modern_](#browser-support) browsers.
 
-[Checkout the demo](https://plyr.io) - [Donate](#donate) - [Slack](https://bit.ly/plyr--chat) - [Video hosting](https://mux.com?ref=plyr-github)
+[Checkout the demo](https://plyr.io) - [Slack](https://bit.ly/plyr--chat) - [Video hosting](https://mux.com?ref=plyr-github)
 
-[![npm version](https://badge.fury.io/js/plyr.svg)](https://badge.fury.io/js/plyr) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/QuadDarv1ne/plyr-video) [![Financial Contributors on Open Collective](https://opencollective.com/plyr/all/badge.svg?label=financial+contributors)](https://opencollective.com/plyr)
+[![npm version](https://badge.fury.io/js/plyr.svg)](https://badge.fury.io/js/plyr) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/QuadDarv1ne/plyr-video)
 
 [![Screenshot of Plyr](https://cdn.plyr.io/static/screenshot.webp)](https://plyr.io)
 
@@ -829,49 +829,6 @@ If you find anything weird with Plyr, please let us know using the GitHub issues
 Plyr is developed by Dupley Maxim Igorevich with help from the awesome
 [contributors](https://github.com/QuadDarv1ne/plyr-video/graphs/contributors)
 
-# Donate
-
-Plyr costs money to run, not only my time. I donate my time for free as I enjoy building Plyr but unfortunately have to pay for domains, hosting, and more. Any help with costs is appreciated...
-
-- [Donate via Patreon](https://www.patreon.com/plyr)
-- [Donate via PayPal](https://www.paypal.me/pottsy/20usd)
-
-# Mentions
-
-- [ProductHunt](https://www.producthunt.com/tech/plyr)
-- [The Changelog](http://thechangelog.com/plyr-simple-html5-media-player-custom-controls-webvtt-captions/)
-- [HTML5 Weekly #177](http://html5weekly.com/issues/177)
-- [Responsive Design #149](http://us4.campaign-archive2.com/?u=559bc631fe5294fc66f5f7f89&id=451a61490f)
-- [Web Design Weekly #174](https://web-design-weekly.com/2015/02/24/web-design-weekly-174/)
-- [Front End Focus #177](https://frontendfoc.us/issues/177)
-- [Hacker News](https://news.ycombinator.com/item?id=9136774)
-- [Web Platform Daily](http://webplatformdaily.org/releases/2015-03-04)
-- [LayerVault Designer News](https://news.layervault.com/stories/45394-plyr--a-simple-html5-media-player)
-- [The Treehouse Show #131](https://teamtreehouse.com/library/episode-131-origami-react-responsive-hero-images)
-- [noupe.com](http://www.noupe.com/design/html5-plyr-is-a-responsive-and-accessible-video-player-94389.html)
-
-# Used by
-
-- [Selz.com](https://selz.com)
-- [Peugeot.fr](http://www.peugeot.fr/marque-et-technologie/technologies/peugeot-i-cockpit.html)
-- [Peugeot.de](http://www.peugeot.de/modelle/modellberater/208-3-turer/fotos-videos.html)
-- [TomTom.com](http://prioritydriving.tomtom.com/)
-- [DIGBMX](http://digbmx.com/)
-- [Grime Archive](https://grimearchive.com/)
-- [Koel - Music streaming solution that works](https://koel.dev/)
-- [Oscar Radio](http://oscar-radio.xyz/)
-- [Sparkk TV](https://www.sparkktv.com/)
-- [@halfhalftravel](https://www.halfhalftravel.com/)
-- [BitChute](https://www.bitchute.com)
-- [Rutheneum-Bote](https://gymnasium-rutheneum.de/content/newspaper/kreativwettbewerb.php)
-- [pressakey.com | Blog-Magazin für Videospiele](https://pressakey.com)
-- [STROLLÿN: Work with a View](https://strollyn.com)
-- [CFDA Runway360](https://runway360.cfda.com/)
-- [NKLAV | Filmmaker](https://nklav.com)
-- [GDI.JS.ORG - Google Drive Index](https://gitlab.com/GoogleDriveIndex/Google-Drive-Index)
-
-If you want to be added to the list, open a pull request. It'd be awesome to see how you're using Plyr 😎
-
 # Useful links and credits
 
 - [PayPal's Accessible HTML5 Video Player (which Plyr was originally ported from)](https://github.com/paypal/accessible-html5-video-player)
@@ -881,29 +838,6 @@ If you want to be added to the list, open a pull request. It'd be awesome to see
 
 - [Cloudflare](https://www.cloudflare.com/) for providing the CDN services.
 - [Sentry](https://sentry.io/) for error logging service on the demo website.
-
-## Contributors
-
-### Code Contributors
-
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
-
-<a href="https://github.com/QuadDarv1ne/plyr-video/graphs/contributors"><img src="https://opencollective.com/plyr/contributors.svg?width=890&button=false" /></a>
-
-### Financial Contributors
-
-Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/plyr/contribute)]
-
-#### Individuals
-
-<a href="https://opencollective.com/plyr"><img src="https://opencollective.com/plyr/individuals.svg?width=890"></a>
-
-#### Organizations
-
-Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/plyr/contribute)]
-
-<a href="https://opencollective.com/plyr/organization/0/website"><img src="https://opencollective.com/plyr/organization/0/avatar.svg"></a>
-<a href="https://opencollective.com/plyr/organization/1/website"><img src="https://opencollective.com/plyr/organization/1/avatar.svg"></a><a href="https://opencollective.com/plyr/organization/2/website"><img src="https://opencollective.com/plyr/organization/2/avatar.svg"></a>
 
 # Copyright and License
 

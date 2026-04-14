@@ -5,6 +5,7 @@
 
 import controls from './controls';
 import support from './support';
+import { sendCommand as sendRutubeCommand } from './plugins/rutube';
 import { dedupe } from './utils/arrays';
 import browser from './utils/browser';
 import {
@@ -30,7 +31,7 @@ const captions = {
       return;
     }
 
-    // Only Vimeo and HTML5 video supported at this point
+    // Skip YouTube (handles captions internally) and HTML5 without textTrack support
     if (!this.isVideo || this.isYouTube || (this.isHTML5 && !support.textTracks)) {
       // Clear menu and hide
       if (
@@ -41,6 +42,12 @@ const captions = {
         controls.setCaptionsMenu.call(this);
       }
 
+      return;
+    }
+
+    // For embeds (Vimeo, Rutube), wait for tracks to be available
+    if (this.isVimeo || this.isRutube) {
+      // Captions will be setup when tracks are loaded from the embed API
       return;
     }
 
@@ -272,6 +279,15 @@ const captions = {
         // Enable text track but don't render captions within the player
         // Since we handle that ourselves
         this.embed.enableTextTrack(language, null, false);
+      }
+
+      // Handle Rutube captions
+      if (this.isRutube) {
+        // Send command to Rutube to enable the caption track
+        const rutubeTrack = this.embed.captionTracks && this.embed.captionTracks[index];
+        if (rutubeTrack) {
+          sendRutubeCommand(this, 'player:setCaption', { id: rutubeTrack.id, enabled: true });
+        }
       }
 
       // Trigger event

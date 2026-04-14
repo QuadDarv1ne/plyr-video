@@ -2,6 +2,7 @@
 // Rutube plugin
 // ==========================================================================
 
+import captions from '../captions';
 import ui from '../ui';
 import { createElement, replaceElement, toggleClass } from '../utils/elements';
 import { triggerEvent } from '../utils/events';
@@ -37,12 +38,16 @@ function assurePlaybackState(play) {
 // Send postMessage command to Rutube player
 function sendCommand(player, type, data = {}) {
   if (!player.embed || !player.embed.iframe) {
-    return;
+    return Promise.resolve(false);
   }
 
   const message = JSON.stringify({ type, data });
   player.embed.iframe.contentWindow.postMessage(message, '*');
+  return Promise.resolve(true);
 }
+
+// Export sendCommand for use in captions.js
+export { sendCommand };
 
 const rutube = {
   setup() {
@@ -303,6 +308,11 @@ const rutube = {
       sendCommand(player, 'frame:checkOptions');
     }, 1000);
 
+    // Request available caption tracks
+    setTimeout(() => {
+      sendCommand(player, 'player:getCaptions');
+    }, 1500);
+
     // Rebuild UI
     if (config.customControls) {
       setTimeout(() => ui.build.call(player), 0);
@@ -428,6 +438,48 @@ const rutube = {
             ui.setTitle.call(player);
           }
         }
+        break;
+
+      case 'player:captionList':
+        if (data && Array.isArray(data.list)) {
+          // Store available caption tracks
+          player.embed.captionTracks = data.list.map((track, index) => ({
+            id: track.id || index,
+            language: track.language || track.srclang || 'unknown',
+            label: track.label || track.name || track.language || 'Unknown',
+            kind: track.kind || 'captions',
+          }));
+
+          // Create faux textTracks array for Plyr captions
+          player.media.textTracks = player.embed.captionTracks;
+
+          player.debug.log('Available caption tracks:', player.embed.captionTracks.length);
+
+          // Setup captions with available tracks
+          if (player.embed.captionTracks.length > 0) {
+            captions.setup.call(player);
+          }
+        }
+        break;
+
+      case 'player:cueChange':
+        if (data && data.cues) {
+          // Strip HTML from cues and update caption display
+          const strippedCues = data.cues.map((cue) => {
+            if (is.string(cue)) {
+              return cue.replace(/<[^>]*>/g, '');
+            }
+            if (cue.text) {
+              return cue.text.replace(/<[^>]*>/g, '');
+            }
+            return cue;
+          });
+          captions.updateCues.call(player, strippedCues);
+        }
+        break;
+
+      case 'player:captionChange':
+        player.debug.log('Rutube caption track changed');
         break;
 
       case 'player:error':
