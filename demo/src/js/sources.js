@@ -130,6 +130,40 @@ const sources = {
       },
     ],
   },
+
+  // Russian video platforms
+  rutube: {
+    type: 'video',
+    ratio: '16:9',
+    sources: [
+      {
+        src: 'https://rutube.ru/play/embed/1e5c8c87e8d0d8d8e8d0d8d8e8d0d8d8',
+        provider: 'rutube',
+      },
+    ],
+  },
+
+  yandex: {
+    type: 'video',
+    ratio: '16:9',
+    sources: [
+      {
+        src: 'https://video.cloud.yandex.net/player/your-video-id',
+        provider: 'yandex',
+      },
+    ],
+  },
+
+  vk: {
+    type: 'video',
+    ratio: '16:9',
+    sources: [
+      {
+        src: 'https://vk.com/video-222953717_456239018',
+        provider: 'vk',
+      },
+    ],
+  },
 };
 
 export default sources;
