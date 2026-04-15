@@ -23,7 +23,7 @@ export const types = {
  */
 export function getProviderByUrl(url) {
   // YouTube
-  if (/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtube-nocookie\.com|youtu\.?be)\/.+$/.test(url)) {
+  if (/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtube-nocookie\.com|youtu\.be)\/.+$/.test(url)) {
     return providers.youtube;
   }
 
@@ -33,22 +33,22 @@ export function getProviderByUrl(url) {
   }
 
   // Rutube
-  if (/rutube\.ru\/(?:play\/embed\/|video\/|embed\/)/.test(url)) {
+  if (/^https?:\/\/(?:www\.)?rutube\.ru\/(?:play\/embed\/|video\/|embed\/)/.test(url)) {
     return providers.rutube;
   }
 
   // Yandex Cloud Video
-  if (/video\.cloud\.yandex\.net\/player\/|cloud\.yandex\.ru.*video\//.test(url)) {
+  if (/^https?:\/\/(?:video\.cloud\.yandex\.net\/player\/|cloud\.yandex\.ru.*video\/)/.test(url)) {
     return providers.yandex;
   }
 
   // VK Video
-  if (/vk\.com\/video|vk\.ru\/video/.test(url)) {
+  if (/^https?:\/\/(?:vk\.com\/video|vk\.ru\/video)/.test(url)) {
     return providers.vk;
   }
 
   // Mail.ru Video
-  if (/my\.mail\.ru\/video|api\.video\.mail\.ru\/videos/.test(url)) {
+  if (/^https?:\/\/(?:my\.mail\.ru\/video|api\.video\.mail\.ru\/videos)/.test(url)) {
     return providers.mailru;
   }
 

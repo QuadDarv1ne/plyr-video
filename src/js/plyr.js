@@ -1173,6 +1173,9 @@ class Plyr {
 
       // If it's a soft destroy, make minimal changes
       if (soft) {
+        // Unbind listeners to prevent accumulation on source change
+        unbindListeners.call(this);
+
         if (Object.keys(this.elements).length) {
           // Remove elements
           removeElement(this.elements.buttons.play);
@@ -1228,6 +1231,8 @@ class Plyr {
     clearTimeout(this.timers.loading);
     clearTimeout(this.timers.controls);
     clearTimeout(this.timers.resized);
+    clearInterval(this.timers.buffering);
+    clearInterval(this.timers.playing);
 
     // Destroy preview thumbnails if active
     if (this.previewThumbnails && this.previewThumbnails.loaded) {
