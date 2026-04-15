@@ -69,6 +69,7 @@ const yandex = {
       params,
       allowedOrigins: ['https://video.cloud.yandex.net', 'https://cloud.yandex.ru'],
       handleMessage: yandex.handleMessage,
+      label: 'Yandex Cloud Video',
     });
 
     defineMediaControls(player);
@@ -78,8 +79,8 @@ const yandex = {
     yandex.getTitle.call(player, videoId);
 
     // Request available qualities and captions
-    setTimeout(() => sendCommand(player, 'frame:checkOptions'), 1000);
-    setTimeout(() => sendCommand(player, 'player:getCaptions'), 1500);
+    player.embed.optionsTimeout = setTimeout(() => sendCommand(player, 'frame:checkOptions'), 1000);
+    player.embed.captionTimeout = setTimeout(() => sendCommand(player, 'player:getCaptions'), 1500);
 
     // Rebuild UI
     if (config.customControls) {

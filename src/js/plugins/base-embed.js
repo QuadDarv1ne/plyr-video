@@ -47,9 +47,10 @@ export function createEmbed(provider, options) {
     allowedOrigins,
     handleMessage,
     initTimeoutMs = 15000,
+    label = 'Embed',
   } = options;
 
-  const config = player.config[provider.name];
+  const config = player.config[provider] || {};
   const id = generateId(player.provider);
 
   const iframe = createElement('iframe');
@@ -72,7 +73,7 @@ export function createEmbed(provider, options) {
     state: 'paused',
     initTimeout: setTimeout(() => {
       if (!player.embed.hasReceivedMessage) {
-        player.debug.warn(`${provider.label}: Player did not initialize within ${initTimeoutMs / 1000}s`);
+        player.debug.warn(`${label}: Player did not initialize within ${initTimeoutMs / 1000}s`);
       }
     }, initTimeoutMs),
   };
@@ -112,7 +113,7 @@ export function createEmbed(provider, options) {
       handleMessage.call(player, msg);
     }
     catch (err) {
-      player.debug.error(`${provider.label}: Error handling message:`, err);
+      player.debug.error(`${label}: Error handling message:`, err);
     }
   };
 
@@ -239,6 +240,8 @@ export function destroy() {
   const player = this;
   if (player.embed) {
     clearTimeout(player.embed.initTimeout);
+    clearTimeout(player.embed.optionsTimeout);
+    clearTimeout(player.embed.captionTimeout);
     if (player.embed.messageHandler) {
       window.removeEventListener('message', player.embed.messageHandler);
     }
@@ -247,19 +250,14 @@ export function destroy() {
 
 // Shared title fetch with timeout and proper error handling
 export function fetchTitle(url, label, titleKey = 'title') {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-
-  fetch(url, { signal: controller.signal })
+  fetch(url, 'json', false, 8000)
     .then((data) => {
-      clearTimeout(timeout);
       if (is.object(data) && data[titleKey]) {
         this.config.title = data[titleKey];
         ui.setTitle.call(this);
       }
     })
     .catch((err) => {
-      clearTimeout(timeout);
       if (this.config.debug) {
         this.debug.warn(`${label}: Failed to fetch title:`, err.message);
       }
@@ -268,19 +266,13 @@ export function fetchTitle(url, label, titleKey = 'title') {
 
 // Shared poster fetch with timeout
 export function fetchPoster(url, player) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-
-  fetch(url, { signal: controller.signal })
+  fetch(url, 'json', false, 8000)
     .then((data) => {
-      clearTimeout(timeout);
       if (data && data.thumbnail_url) {
         ui.setPoster.call(player, data.thumbnail_url).catch(() => {});
       }
     })
-    .catch(() => {
-      clearTimeout(timeout);
-    });
+    .catch(() => {});
 }
 
 // Shared message handler for player:changeState

@@ -9,7 +9,10 @@ export default function fetch(url, responseType = 'text', withCredentials = fals
       const request = new XMLHttpRequest();
 
       // Check for CORS support
-      if (!('withCredentials' in request)) return;
+      if (!('withCredentials' in request)) {
+        reject(new Error('CORS not supported'));
+        return;
+      }
 
       // Set to true if needed for CORS
       if (withCredentials) {

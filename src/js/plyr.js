@@ -1229,6 +1229,12 @@ class Plyr {
     clearTimeout(this.timers.controls);
     clearTimeout(this.timers.resized);
 
+    // Destroy preview thumbnails if active
+    if (this.previewThumbnails && this.previewThumbnails.loaded) {
+      this.previewThumbnails.destroy();
+      this.previewThumbnails = null;
+    }
+
     // Provider specific stuff
     if (this.isHTML5) {
       // Restore native video controls
@@ -1253,42 +1259,22 @@ class Plyr {
     else if (this.isVimeo) {
       // Destroy Vimeo API
       // then clean up (wait, to prevent postmessage errors)
+      let vimeoDone = false;
+      const doneOnce = () => {
+        if (vimeoDone) return;
+        vimeoDone = true;
+        done();
+      };
+
       if (this.embed !== null) {
-        this.embed.unload().then(done);
+        this.embed.unload().then(doneOnce);
       }
 
       // Vimeo does not always return
-      setTimeout(done, 200);
+      setTimeout(doneOnce, 200);
     }
-    else if (this.isRutube) {
-      // Destroy Rutube message listener
-      if (this.embed !== null && is.function(this.embed.destroy)) {
-        this.embed.destroy();
-      }
-
-      // Clean up
-      done();
-    }
-    else if (this.isYandexCloud) {
-      // Destroy Yandex Cloud Video message listener
-      if (this.embed !== null && is.function(this.embed.destroy)) {
-        this.embed.destroy();
-      }
-
-      // Clean up
-      done();
-    }
-    else if (this.isVK) {
-      // Destroy VK Video message listener
-      if (this.embed !== null && is.function(this.embed.destroy)) {
-        this.embed.destroy();
-      }
-
-      // Clean up
-      done();
-    }
-    else if (this.isMailRu) {
-      // Destroy Mail.ru Video message listener
+    else if (this.isRutube || this.isYandexCloud || this.isVK || this.isMailRu) {
+      // Destroy postMessage-based embed providers
       if (this.embed !== null && is.function(this.embed.destroy)) {
         this.embed.destroy();
       }

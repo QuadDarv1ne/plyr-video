@@ -71,6 +71,7 @@ const rutube = {
       params,
       allowedOrigins: ['https://rutube.ru', 'https://www.rutube.ru'],
       handleMessage: rutube.handleMessage,
+      label: 'Rutube',
     });
 
     defineMediaControls(player);
@@ -85,8 +86,8 @@ const rutube = {
     }
 
     // Request available qualities and captions
-    setTimeout(() => sendCommand(player, 'frame:checkOptions'), 1000);
-    setTimeout(() => sendCommand(player, 'player:getCaptions'), 1500);
+    player.embed.optionsTimeout = setTimeout(() => sendCommand(player, 'frame:checkOptions'), 1000);
+    player.embed.captionTimeout = setTimeout(() => sendCommand(player, 'player:getCaptions'), 1500);
 
     // Rebuild UI
     if (config.customControls) {
