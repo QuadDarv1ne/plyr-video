@@ -1240,8 +1240,23 @@ class Plyr {
       this.listeners.global(false);
     }
 
+    // Destroy RangeTouch instances on range inputs
+    if (this.elements.inputs) {
+      this.elements.inputs.forEach((input) => {
+        if (input && input.rangeTouch) {
+          input.rangeTouch.destroy();
+        }
+      });
+    }
+
     // Provider specific stuff
     if (this.isHTML5) {
+      // Cancel any pending quality change
+      if (this._pendingQualityChange) {
+        off.call(this, this.media, 'loadedmetadata', this._pendingQualityChange);
+        this._pendingQualityChange = null;
+      }
+
       // Restore native video controls
       ui.toggleNativeControls.call(this, true);
 

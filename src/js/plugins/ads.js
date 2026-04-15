@@ -27,6 +27,15 @@ function destroy(instance) {
   }
 
   instance.elements.container.remove();
+
+  // Clear timers to prevent callbacks on destroyed instance
+  clearInterval(instance.countdownTimer);
+  clearTimeout(instance.safetyTimer);
+
+  // Remove window resize listener to prevent memory leak
+  if (instance._resizeHandler) {
+    window.removeEventListener('resize', instance._resizeHandler);
+  }
 }
 
 class Ads {
@@ -462,11 +471,12 @@ class Ads {
 
     // Listen to the resizing of the window. And resize ad accordingly
     // TODO: eventually implement ResizeObserver
-    window.addEventListener('resize', () => {
+    this._resizeHandler = () => {
       if (this.manager) {
         this.manager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
       }
-    });
+    };
+    window.addEventListener('resize', this._resizeHandler);
   };
 
   /**

@@ -4,7 +4,7 @@
 
 import support from './support';
 import { removeElement } from './utils/elements';
-import { triggerEvent } from './utils/events';
+import { off, triggerEvent } from './utils/events';
 import is from './utils/is';
 import { silencePromise } from './utils/promise';
 import { setAspectRatio } from './utils/style';
@@ -91,21 +91,31 @@ const html5 = {
           // Get current state
           const { currentTime, paused, preload, readyState, playbackRate } = player.media;
 
+          // Cancel any pending quality change to avoid race condition
+          if (player._pendingQualityChange) {
+            off.call(player, player.media, 'loadedmetadata', player._pendingQualityChange);
+          }
+
+          // Restore time handler
+          const restoreQuality = () => {
+            player._pendingQualityChange = null;
+            player.speed = playbackRate;
+            player.currentTime = currentTime;
+
+            // Resume playing
+            if (!paused) {
+              silencePromise(player.play());
+            }
+          };
+
           // Set new source
           player.media.src = source.getAttribute('src');
 
           // Prevent loading if preload="none" and the current source isn't loaded (#1044)
           if (preload !== 'none' || readyState) {
             // Restore time
-            player.once('loadedmetadata', () => {
-              player.speed = playbackRate;
-              player.currentTime = currentTime;
-
-              // Resume playing
-              if (!paused) {
-                silencePromise(player.play());
-              }
-            });
+            player._pendingQualityChange = restoreQuality;
+            player.once('loadedmetadata', restoreQuality);
 
             // Load new source
             player.media.load();

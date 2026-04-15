@@ -813,7 +813,7 @@ class Listeners {
       }, 0);
 
       // Delay a little more for mouse users
-      const delay = this.touch ? 3000 : 4000;
+      const delay = player.touch ? 3000 : 4000;
 
       // Clear timer
       clearTimeout(timers.controls);
