@@ -498,8 +498,11 @@ const yandex = {
   destroy() {
     const player = this;
 
-    if (player.embed && player.embed.messageHandler) {
-      window.removeEventListener('message', player.embed.messageHandler);
+    if (player.embed) {
+      clearTimeout(player.embed.initTimeout);
+      if (player.embed.messageHandler) {
+        window.removeEventListener('message', player.embed.messageHandler);
+      }
     }
   },
 };
