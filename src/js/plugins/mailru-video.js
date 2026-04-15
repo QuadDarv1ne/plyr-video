@@ -153,7 +153,8 @@ const mailru = {
     // Note: Mail.ru doesn't document a postMessage API, so we listen but don't expect events
     player.embed.messageHandler = (event) => {
       // Validate origin
-      if (!event.origin.includes('mail.ru') && !event.origin.includes('video.mail.ru')) {
+      const allowedOrigins = ['https://my.mail.ru', 'https://api.video.mail.ru', 'https://video.mail.ru'];
+      if (!allowedOrigins.includes(event.origin)) {
         return;
       }
 
@@ -310,14 +311,15 @@ const mailru = {
   handleStringEvent(data) {
     const player = this;
 
-    if (data.includes('play') || data.includes('started')) {
+    // Use word-boundary regex to avoid false positives (e.g. "play" matching "display")
+    if (/\b(?:play|started)\b/i.test(data)) {
       assurePlaybackState.call(player, true);
       triggerEvent.call(player, player.media, 'playing');
     }
-    else if (data.includes('pause')) {
+    else if (/\b(?:pause|paused)\b/i.test(data)) {
       assurePlaybackState.call(player, false);
     }
-    else if (data.includes('end') || data.includes('complete')) {
+    else if (/\b(?:end|complete|finished)\b/i.test(data)) {
       player.media.paused = true;
       triggerEvent.call(player, player.media, 'ended');
     }

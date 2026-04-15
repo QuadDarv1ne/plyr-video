@@ -151,6 +151,11 @@ const vk = {
       state: 'unstarted',
       currentTime: 0,
       duration: 0,
+      initTimeout: setTimeout(() => {
+        if (!player.embed.hasReceivedMessage) {
+          player.debug.warn('VK Video: Player did not initialize within 15s');
+        }
+      }, 15000),
     };
 
     // Initialize media properties
@@ -164,13 +169,20 @@ const vk = {
     // Setup postMessage listener
     player.embed.messageHandler = (event) => {
       // Validate origin
-      if (!event.origin.includes('vk.com') && !event.origin.includes('vk.ru') && !event.origin.includes('userapi.com')) {
+      const allowedOrigins = ['https://vk.com', 'https://vk.ru', 'https://userapi.com'];
+      if (!allowedOrigins.includes(event.origin)) {
         return;
       }
 
       const data = event.data;
       if (!data) {
         return;
+      }
+
+      // Clear init timeout on first message
+      if (!player.embed.hasReceivedMessage) {
+        player.embed.hasReceivedMessage = true;
+        clearTimeout(player.embed.initTimeout);
       }
 
       try {

@@ -3,7 +3,7 @@
 // Using XHR to avoid issues with older browsers
 // ==========================================================================
 
-export default function fetch(url, responseType = 'text', withCredentials = false) {
+export default function fetch(url, responseType = 'text', withCredentials = false, timeout = 10000) {
   return new Promise((resolve, reject) => {
     try {
       const request = new XMLHttpRequest();
@@ -17,6 +17,10 @@ export default function fetch(url, responseType = 'text', withCredentials = fals
       }
 
       request.addEventListener('load', () => {
+        if (request.status >= 400) {
+          reject(new Error(`HTTP ${request.status}`));
+          return;
+        }
         if (responseType === 'text') {
           try {
             resolve(JSON.parse(request.responseText));
@@ -31,8 +35,14 @@ export default function fetch(url, responseType = 'text', withCredentials = fals
       });
 
       request.addEventListener('error', () => {
-        throw new Error(request.status);
+        reject(new Error('Network request failed'));
       });
+
+      request.addEventListener('timeout', () => {
+        reject(new Error('Request timed out'));
+      });
+
+      request.timeout = timeout;
 
       request.open('GET', url, true);
       request.responseType = responseType;

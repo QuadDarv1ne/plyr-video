@@ -145,6 +145,11 @@ const rutube = {
       iframe,
       hasPlayed: false,
       state: 'paused',
+      initTimeout: setTimeout(() => {
+        if (!player.embed.hasReceivedMessage) {
+          player.debug.warn('Rutube: Player did not initialize within 15s');
+        }
+      }, 15000),
     };
 
     // Initialize media properties
@@ -158,7 +163,8 @@ const rutube = {
     // Setup postMessage listener
     player.embed.messageHandler = (event) => {
       // Validate origin
-      if (!event.origin.includes('rutube.ru')) {
+      const allowedOrigins = ['https://rutube.ru', 'https://www.rutube.ru'];
+      if (!allowedOrigins.includes(event.origin)) {
         return;
       }
 
@@ -172,6 +178,12 @@ const rutube = {
 
       if (!msg || !msg.type) {
         return;
+      }
+
+      // Clear init timeout on first message
+      if (!player.embed.hasReceivedMessage) {
+        player.embed.hasReceivedMessage = true;
+        clearTimeout(player.embed.initTimeout);
       }
 
       try {

@@ -131,6 +131,11 @@ const yandex = {
       iframe,
       hasPlayed: false,
       state: 'paused',
+      initTimeout: setTimeout(() => {
+        if (!player.embed.hasReceivedMessage) {
+          player.debug.warn('Yandex Cloud Video: Player did not initialize within 15s');
+        }
+      }, 15000),
     };
 
     // Initialize media properties
@@ -144,7 +149,8 @@ const yandex = {
     // Setup postMessage listener
     player.embed.messageHandler = (event) => {
       // Validate origin
-      if (!event.origin.includes('cloud.yandex') && !event.origin.includes('yandexcloud.net')) {
+      const allowedOrigins = ['https://video.cloud.yandex.net', 'https://cloud.yandex.ru'];
+      if (!allowedOrigins.includes(event.origin)) {
         return;
       }
 
@@ -158,6 +164,12 @@ const yandex = {
 
       if (!msg || !msg.type) {
         return;
+      }
+
+      // Clear init timeout on first message
+      if (!player.embed.hasReceivedMessage) {
+        player.embed.hasReceivedMessage = true;
+        clearTimeout(player.embed.initTimeout);
       }
 
       try {
