@@ -1242,7 +1242,7 @@ class Plyr {
 
     // Destroy RangeTouch instances on range inputs
     if (this.elements.inputs) {
-      this.elements.inputs.forEach((input) => {
+      Object.values(this.elements.inputs).forEach((input) => {
         if (input && input.rangeTouch) {
           input.rangeTouch.destroy();
         }

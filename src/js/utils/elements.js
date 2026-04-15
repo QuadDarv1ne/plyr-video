@@ -207,41 +207,32 @@ export function hasClass(element, className) {
 }
 
 // Element matches selector
+const matchesMethod = Element.prototype.matches
+  || Element.prototype.webkitMatchesSelector
+  || Element.prototype.mozMatchesSelector
+  || Element.prototype.msMatchesSelector;
+
 export function matches(element, selector) {
-  const { prototype } = Element;
-
-  function match() {
-    return Array.from(document.querySelectorAll(selector)).includes(this);
-  }
-
-  const method
-    = prototype.matches
-      || prototype.webkitMatchesSelector
-      || prototype.mozMatchesSelector
-      || prototype.msMatchesSelector
-      || match;
-
-  return method.call(element, selector);
+  return matchesMethod
+    ? matchesMethod.call(element, selector)
+    : Array.from(document.querySelectorAll(selector)).includes(element);
 }
 
 // Closest ancestor element matching selector (also tests element itself)
+const closestMethod = Element.prototype.closest;
+
 export function closest(element, selector) {
-  const { prototype } = Element;
-
-  // https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#Polyfill
-  function closestElement() {
-    let el = this;
-
-    do {
-      if (matches.matches(el, selector)) return el;
-      el = el.parentElement || el.parentNode;
-    } while (el !== null && el.nodeType === 1);
-    return null;
+  if (closestMethod) {
+    return closestMethod.call(element, selector);
   }
 
-  const method = prototype.closest || closestElement;
-
-  return method.call(element, selector);
+  // https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#Polyfill
+  let el = element;
+  do {
+    if (matches(el, selector)) return el;
+    el = el.parentElement || el.parentNode;
+  } while (el !== null && el.nodeType === 1);
+  return null;
 }
 
 // Find all elements
