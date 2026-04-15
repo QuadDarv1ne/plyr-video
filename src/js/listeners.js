@@ -16,7 +16,6 @@ class Listeners {
   constructor(player) {
     this.player = player;
     this.lastKey = null;
-    this.focusTimer = null;
     this.lastKeyDown = null;
 
     this.handleKey = this.handleKey.bind(this);

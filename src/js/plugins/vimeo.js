@@ -301,7 +301,7 @@ const vimeo = {
         controls.setDownloadUrl.call(player);
       })
       .catch((error) => {
-        this.debug.warn(error);
+        player.debug.warn(error);
       });
 
     Object.defineProperty(player.media, 'currentSrc', {

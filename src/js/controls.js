@@ -739,15 +739,17 @@ const controls = {
     const time = (this.duration / 100) * percent;
 
     // Display the time a click would seek to
-    tipElement.textContent = controls.formatTime(time);
+    let text = controls.formatTime(time);
 
     // Get marker point for time
     const point = this.config.markers?.points?.find(({ time: t }) => t === Math.round(time));
 
     // Append the point label to the tooltip
     if (point) {
-      tipElement.insertAdjacentHTML('afterbegin', `${point.label}<br>`);
+      text = `${point.label}<br>${text}`;
     }
+
+    tipElement.innerHTML = text;
 
     // Set position
     tipElement.style.left = `${percent}%`;

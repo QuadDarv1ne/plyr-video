@@ -1235,6 +1235,11 @@ class Plyr {
       this.previewThumbnails = null;
     }
 
+    // Remove global window/document listeners
+    if (this.listeners) {
+      this.listeners.global(false);
+    }
+
     // Provider specific stuff
     if (this.isHTML5) {
       // Restore native video controls

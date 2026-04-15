@@ -189,6 +189,10 @@ const youtube = {
 
             player.media.error = { code, message };
 
+            // Clear polling intervals to prevent memory leaks
+            clearInterval(player.timers.buffering);
+            clearInterval(player.timers.playing);
+
             triggerEvent.call(player, player.media, 'error');
           }
         },
