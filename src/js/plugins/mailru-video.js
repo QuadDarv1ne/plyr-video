@@ -3,87 +3,50 @@
 // ==========================================================================
 
 import ui from '../ui';
-import { createElement, replaceElement, toggleClass } from '../utils/elements';
+import { createElement, replaceElement } from '../utils/elements';
 import { triggerEvent } from '../utils/events';
 import is from '../utils/is';
 import sendCommand from '../utils/post-message';
 import { generateId } from '../utils/strings';
-import { setAspectRatio } from '../utils/style';
+import {
+  assurePlaybackState,
+  baseSetup,
+  destroy,
+  isOriginAllowed,
+} from './base-embed';
 
 // Parse Mail.ru Video ID from URL
 function parseId(url) {
   if (is.empty(url)) {
     return null;
   }
-
-  // Match various Mail.ru Video URL formats
-  // https://my.mail.ru/video/embed/1234567890123456789
-  // https://api.video.mail.ru/videos/embed/mail/user/_myvideo/123
-  // https://my.mail.ru/mail/user/_myvideo/123.html
   const embedRegex = /(?:my\.mail\.ru\/video\/embed\/|api\.video\.mail\.ru\/videos\/embed\/)([^?]+)/i;
   const embedMatch = url.match(embedRegex);
   if (embedMatch) {
     return embedMatch[1];
   }
-
-  // Try the old format: my.mail.ru/mail/user/_myvideo/123.html
   const oldRegex = /my\.mail\.ru\/mail\/([^/]+)\/_myvideo\/(\d+)/i;
   const oldMatch = url.match(oldRegex);
   if (oldMatch) {
     return `mail/${oldMatch[1]}/_myvideo/${oldMatch[2]}`;
   }
-
   return url;
-}
-
-// Set playback state and trigger change (only on actual change)
-function assurePlaybackState(play) {
-  if (play && !this.embed.hasPlayed) {
-    this.embed.hasPlayed = true;
-  }
-  if (this.media.paused === play) {
-    this.media.paused = !play;
-    triggerEvent.call(this, this.media, play ? 'play' : 'pause');
-  }
 }
 
 const mailru = {
   setup() {
-    const player = this;
-
-    // Add embed class for responsive
-    toggleClass(player.elements.wrapper, player.config.classNames.embed, true);
-
-    // Set speed options from config
-    player.options.speed = player.config.speed.options;
-
-    // Set initial ratio
-    setAspectRatio.call(player);
-
-    // Setup ready
-    mailru.ready.call(player);
+    baseSetup.call(this, mailru);
   },
 
-  // Get the media title
-  getTitle(_videoId) {
-    // Mail.ru doesn't have a public metadata API
-    // Title should be set manually if needed
-  },
-
-  // API Ready
   ready() {
     const player = this;
     const config = player.config.mailru;
 
-    // Get the source URL or ID
     let source = player.media.getAttribute('src');
-
-    // Get from <div> if needed
     if (is.empty(source)) {
       source = player.media.getAttribute(player.config.attributes.embed.id);
     }
 
-    // Parse and validate video ID
     const videoId = parseId(source);
     if (is.empty(videoId)) {
       player.debug.error('Mail.ru Video: No valid video ID found');
@@ -92,56 +55,45 @@ const mailru = {
 
     const id = generateId(player.provider);
 
-    // Replace the <iframe> with a managed <iframe>
-    const iframe = createElement('iframe');
-    iframe.setAttribute('id', id);
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer');
-
-    // Build Mail.ru Video embed URL
-    // Use api.video.mail.ru for the embed
     let embedUrl;
     if (videoId.includes('mail/') || videoId.includes('bk/') || videoId.includes('inbox/') || videoId.includes('list.ru/')) {
-      // Full path format
       embedUrl = `https://api.video.mail.ru/videos/embed/${videoId}`;
     }
     else {
-      // Numeric ID format
       embedUrl = `https://my.mail.ru/video/embed/${videoId}`;
     }
 
     const params = [];
-
-    // Add optional parameters
-    if (config.autoplay) {
-      params.push('autoplay=1');
-    }
-
-    // Always set wmode=opaque for proper overlay handling
+    if (config.autoplay) params.push('autoplay=1');
     params.push('wmode=opaque');
 
+    const iframe = createElement('iframe');
+    iframe.setAttribute('id', id);
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer');
     iframe.setAttribute('src', `${embedUrl}?${params.join('&')}`);
 
-    // Create wrapper for poster
     const wrapper = createElement('div', {
-      className: player.config.classNames.embedContainer,
+      'className': player.config.classNames.embedContainer,
       'data-poster': player.poster,
     });
     wrapper.appendChild(iframe);
 
-    // Replace media element
     player.media = replaceElement(wrapper, player.media);
 
-    // Store iframe reference
     player.embed = {
       iframe,
       hasPlayed: false,
       state: 'unstarted',
       currentTime: 0,
       duration: 0,
+      initTimeout: setTimeout(() => {
+        if (!player.embed.hasReceivedMessage) {
+          player.debug.warn('Mail.ru Video: Player did not initialize within 15s');
+        }
+      }, 15000),
     };
 
-    // Initialize media properties
     player.media.paused = true;
     player.media.currentTime = 0;
     player.media.duration = 0;
@@ -150,11 +102,8 @@ const mailru = {
     player.media.lastBuffered = null;
 
     // Setup postMessage listener
-    // Note: Mail.ru doesn't document a postMessage API, so we listen but don't expect events
     player.embed.messageHandler = (event) => {
-      // Validate origin
-      const allowedOrigins = ['https://my.mail.ru', 'https://api.video.mail.ru', 'https://video.mail.ru'];
-      if (!allowedOrigins.includes(event.origin)) {
+      if (!isOriginAllowed(event.origin, ['https://my.mail.ru', 'https://api.video.mail.ru', 'https://video.mail.ru'])) {
         return;
       }
 
@@ -163,7 +112,6 @@ const mailru = {
         msg = JSON.parse(event.data);
       }
       catch {
-        // Mail.ru might send string events
         if (is.string(event.data)) {
           try {
             mailru.handleStringEvent.call(player, event.data);
@@ -189,7 +137,7 @@ const mailru = {
 
     window.addEventListener('message', player.embed.messageHandler);
 
-    // Create a faux HTML5 API using standard controls
+    // Media controls
     player.media.play = () => {
       assurePlaybackState.call(player, true);
       sendCommand(player, 'play');
@@ -206,24 +154,20 @@ const mailru = {
       sendCommand(player, 'stop');
     };
 
-    // Seeking
+    // currentTime
     Object.defineProperty(player.media, 'currentTime', {
       get() {
         return player.embed.currentTime || 0;
       },
       set(time) {
-        const { media, paused } = player;
-
-        // Set seeking state and trigger event
+        const { media } = player;
         media.seeking = true;
         triggerEvent.call(player, media, 'seeking');
-
-        // Send seek command
         sendCommand(player, 'seek', { time });
       },
     });
 
-    // Playback speed - not supported by Mail.ru
+    // playbackRate - not supported
     let speed = player.config.speed.selected;
     Object.defineProperty(player.media, 'playbackRate', {
       get() {
@@ -235,7 +179,7 @@ const mailru = {
       },
     });
 
-    // Volume
+    // volume
     let { volume } = player.config;
     Object.defineProperty(player.media, 'volume', {
       get() {
@@ -248,7 +192,7 @@ const mailru = {
       },
     });
 
-    // Muted
+    // muted
     let { muted } = player.config;
     Object.defineProperty(player.media, 'muted', {
       get() {
@@ -262,21 +206,21 @@ const mailru = {
       },
     });
 
-    // Source
+    // currentSrc
     Object.defineProperty(player.media, 'currentSrc', {
       get() {
         return embedUrl;
       },
     });
 
-    // Ended
+    // ended
     Object.defineProperty(player.media, 'ended', {
       get() {
         return player.currentTime === player.duration && player.duration > 0;
       },
     });
 
-    // Loop
+    // loop
     let { loop } = player.config;
     Object.defineProperty(player.media, 'loop', {
       get() {
@@ -288,7 +232,7 @@ const mailru = {
       },
     });
 
-    // Quality - not exposed via API
+    // quality - not exposed via API
     Object.defineProperty(player.media, 'quality', {
       get() {
         return player.embed.currentQuality || null;
@@ -307,11 +251,8 @@ const mailru = {
     }
   },
 
-  // Handle string events from Mail.ru (undocumented)
   handleStringEvent(data) {
     const player = this;
-
-    // Use word-boundary regex to avoid false positives (e.g. "play" matching "display")
     if (/\b(?:play|started)\b/i.test(data)) {
       assurePlaybackState.call(player, true);
       triggerEvent.call(player, player.media, 'playing');
@@ -325,7 +266,6 @@ const mailru = {
     }
   },
 
-  // Handle postMessage events from Mail.ru
   handleMessage(msg) {
     const player = this;
     const { type, data } = msg;
@@ -333,7 +273,6 @@ const mailru = {
     switch (type) {
       case 'ready':
       case 'player:ready':
-        // Player is ready
         player.debug.log('Mail.ru Video player ready');
         player.embed.state = 'ready';
         triggerEvent.call(player, player.media, 'timeupdate');
@@ -364,12 +303,10 @@ const mailru = {
       case 'player:timeupdate':
         if (data && is.number(data.time)) {
           player.embed.currentTime = data.time;
-
           if (is.number(data.duration) && player.media.duration !== data.duration) {
             player.media.duration = data.duration;
             triggerEvent.call(player, player.media, 'durationchange');
           }
-
           triggerEvent.call(player, player.media, 'timeupdate');
         }
         break;
@@ -401,7 +338,6 @@ const mailru = {
         break;
 
       default:
-        // Debug unknown events
         if (player.config.debug) {
           player.debug.log('Mail.ru Video unknown event:', type, data);
         }
@@ -409,16 +345,8 @@ const mailru = {
     }
   },
 
-  // Cleanup
   destroy() {
-    const player = this;
-
-    if (player.embed) {
-      clearTimeout(player.embed.initTimeout);
-      if (player.embed.messageHandler) {
-        window.removeEventListener('message', player.embed.messageHandler);
-      }
-    }
+    destroy.call(this);
   },
 };
 

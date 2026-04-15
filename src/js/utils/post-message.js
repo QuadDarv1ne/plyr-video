@@ -7,9 +7,10 @@
  * @param {object} player - The Plyr player instance
  * @param {string|object} typeOrParams - The command type or full params object
  * @param {object} data - Additional data (only used when typeOrParams is a string)
+ * @param {string} targetOrigin - Target origin for postMessage (default: '*')
  * @returns {Promise<boolean>} - Whether the message was sent successfully
  */
-export function sendCommand(player, typeOrParams, data = {}) {
+export function sendCommand(player, typeOrParams, data = {}, targetOrigin = '*') {
   if (!player.embed || !player.embed.iframe) {
     return Promise.resolve(false);
   }
@@ -33,7 +34,7 @@ export function sendCommand(player, typeOrParams, data = {}) {
   }
 
   try {
-    iframe.contentWindow.postMessage(message, '*');
+    iframe.contentWindow.postMessage(message, targetOrigin);
     return Promise.resolve(true);
   }
   catch {

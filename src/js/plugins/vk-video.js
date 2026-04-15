@@ -3,99 +3,57 @@
 // ==========================================================================
 
 import ui from '../ui';
-import { createElement, replaceElement, toggleClass } from '../utils/elements';
+import { createElement, replaceElement } from '../utils/elements';
 import { triggerEvent } from '../utils/events';
-import fetch from '../utils/fetch';
 import is from '../utils/is';
 import sendCommand from '../utils/post-message';
 import { generateId } from '../utils/strings';
-import { setAspectRatio } from '../utils/style';
+import {
+  assurePlaybackState,
+  baseSetup,
+  destroy,
+  fetchTitle,
+  isOriginAllowed,
+} from './base-embed';
 
 // Parse VK Video ID from URL
 function parseId(url) {
   if (is.empty(url)) {
     return null;
   }
-
-  // Match various VK Video URL formats
-  // https://vk.com/video-123456_789012345
-  // https://vk.ru/video_ext.php?oid=-123456&id=789012345
-  // oid=-123456&id=789012345&hash=abc123
-  const regex = /(?:vk\.com|vk\.ru).*video.*[?&]oid=([^&]+).*id=([^&]+)/i;
-  const match = url.match(regex);
-  if (match && match[1] && match[2]) {
-    return `oid=${match[1]}&id=${match[2]}`;
+  // Match: vk.com/video-123_456 or vk.ru/video?oid=-123&id=456
+  const oidMatch = url.match(/[?&]oid=([^&]+)/i);
+  const idMatch2 = url.match(/[?&]id=([^&]+)/i);
+  if (oidMatch && idMatch2) {
+    return `oid=${oidMatch[1]}&id=${idMatch2[1]}`;
   }
 
-  // Try simple video ID format
-  const simpleMatch = url.match(/video(-?\d+)_(\d+)/i);
-  if (simpleMatch) {
-    return `oid=${simpleMatch[1]}&id=${simpleMatch[2]}`;
+  // Try simple video ID format: video-123_456
+  const idMatch = url.match(/video(-?\d+)_(\d+)/i);
+  if (idMatch) {
+    return `oid=${idMatch[1]}&id=${idMatch[2]}`;
   }
-
   return url;
-}
-
-// Set playback state and trigger change (only on actual change)
-function assurePlaybackState(play) {
-  if (play && !this.embed.hasPlayed) {
-    this.embed.hasPlayed = true;
-  }
-  if (this.media.paused === play) {
-    this.media.paused = !play;
-    triggerEvent.call(this, this.media, play ? 'play' : 'pause');
-  }
 }
 
 const vk = {
   setup() {
-    const player = this;
-
-    // Add embed class for responsive
-    toggleClass(player.elements.wrapper, player.config.classNames.embed, true);
-
-    // Set speed options from config
-    player.options.speed = player.config.speed.options;
-
-    // Set initial ratio
-    setAspectRatio.call(player);
-
-    // Setup ready
-    vk.ready.call(player);
+    baseSetup.call(this, vk);
   },
 
-  // Get the media title
   getTitle(oid, videoId) {
-    // VK doesn't have a public metadata API like YouTube/Vimeo
-    // We can try to fetch from VK oEmbed or video page
-    const url = `https://vk.ru/al_video.php?act=show&al=1&video=${oid}_${videoId}`;
-
-    fetch(url)
-      .then((data) => {
-        if (is.object(data) && data.title) {
-          this.config.title = data.title;
-          ui.setTitle.call(this);
-        }
-      })
-      .catch(() => {
-        // Silently fail - title is not critical
-      });
+    fetchTitle.call(this, `https://vk.ru/al_video.php?act=show&al=1&video=${oid}_${videoId}`, 'VK Video');
   },
 
-  // API Ready
   ready() {
     const player = this;
     const config = player.config.vk;
 
-    // Get the source URL or ID
     let source = player.media.getAttribute('src');
-
-    // Get from <div> if needed
     if (is.empty(source)) {
       source = player.media.getAttribute(player.config.attributes.embed.id);
     }
 
-    // Parse and validate video parameters
     const videoParams = parseId(source);
     if (is.empty(videoParams)) {
       player.debug.error('VK Video: No valid video ID found');
@@ -103,48 +61,33 @@ const vk = {
     }
 
     const id = generateId(player.provider);
-
-    // Extract oid and videoId for title fetching
     const oidMatch = videoParams.match(/oid=([^&]+)/);
     const idMatch = videoParams.match(/id=([^&]+)/);
     const oid = oidMatch ? oidMatch[1] : '';
     const videoId = idMatch ? idMatch[1] : '';
 
-    // Replace the <iframe> with a managed <iframe>
     const iframe = createElement('iframe');
     iframe.setAttribute('id', id);
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer');
 
-    // Build VK Video embed URL with js_api=1 for API control
     const embedUrl = `https://vk.ru/video_ext.php?${videoParams}&js_api=1`;
     const params = [];
-
-    // Add optional parameters
-    if (config.autoplay) {
-      params.push('autoplay=1');
-    }
-    if (config.hd) {
-      params.push(`hd=${config.hd}`);
-    }
-    if (config.startTime) {
-      params.push(`t=${config.startTime}`);
-    }
+    if (config.autoplay) params.push('autoplay=1');
+    if (config.hd) params.push(`hd=${config.hd}`);
+    if (config.startTime) params.push(`t=${config.startTime}`);
 
     const finalUrl = params.length ? `${embedUrl}&${params.join('&')}` : embedUrl;
     iframe.setAttribute('src', finalUrl);
 
-    // Create wrapper for poster
     const wrapper = createElement('div', {
-      className: player.config.classNames.embedContainer,
+      'className': player.config.classNames.embedContainer,
       'data-poster': player.poster,
     });
     wrapper.appendChild(iframe);
 
-    // Replace media element
     player.media = replaceElement(wrapper, player.media);
 
-    // Store iframe reference
     player.embed = {
       iframe,
       hasPlayed: false,
@@ -158,7 +101,6 @@ const vk = {
       }, 15000),
     };
 
-    // Initialize media properties
     player.media.paused = true;
     player.media.currentTime = 0;
     player.media.duration = 0;
@@ -168,9 +110,7 @@ const vk = {
 
     // Setup postMessage listener
     player.embed.messageHandler = (event) => {
-      // Validate origin
-      const allowedOrigins = ['https://vk.com', 'https://vk.ru', 'https://userapi.com'];
-      if (!allowedOrigins.includes(event.origin)) {
+      if (!isOriginAllowed(event.origin, ['https://vk.com', 'https://vk.ru', 'https://userapi.com'])) {
         return;
       }
 
@@ -179,7 +119,6 @@ const vk = {
         return;
       }
 
-      // Clear init timeout on first message
       if (!player.embed.hasReceivedMessage) {
         player.embed.hasReceivedMessage = true;
         clearTimeout(player.embed.initTimeout);
@@ -195,7 +134,7 @@ const vk = {
 
     window.addEventListener('message', player.embed.messageHandler);
 
-    // Create a faux HTML5 API using the VK Video API
+    // Media controls
     player.media.play = () => {
       assurePlaybackState.call(player, true);
       sendCommand(player, { method: 'play', params: [] });
@@ -212,24 +151,20 @@ const vk = {
       sendCommand(player, { method: 'stop', params: [] });
     };
 
-    // Seeking
+    // currentTime
     Object.defineProperty(player.media, 'currentTime', {
       get() {
         return player.embed.currentTime || 0;
       },
       set(time) {
         const { media } = player;
-
-        // Set seeking state and trigger event
         media.seeking = true;
         triggerEvent.call(player, media, 'seeking');
-
-        // Send seek command
         sendCommand(player, { method: 'seek', params: [time] });
       },
     });
 
-    // Playback speed - VK doesn't support speed control via API
+    // playbackRate - VK doesn't support speed control via API
     let speed = player.config.speed.selected;
     Object.defineProperty(player.media, 'playbackRate', {
       get() {
@@ -241,7 +176,7 @@ const vk = {
       },
     });
 
-    // Volume
+    // volume
     let { volume } = player.config;
     Object.defineProperty(player.media, 'volume', {
       get() {
@@ -254,7 +189,7 @@ const vk = {
       },
     });
 
-    // Muted
+    // muted
     let { muted } = player.config;
     Object.defineProperty(player.media, 'muted', {
       get() {
@@ -268,21 +203,21 @@ const vk = {
       },
     });
 
-    // Source
+    // currentSrc
     Object.defineProperty(player.media, 'currentSrc', {
       get() {
         return `https://vk.ru/video_ext.php?${videoParams}`;
       },
     });
 
-    // Ended
+    // ended
     Object.defineProperty(player.media, 'ended', {
       get() {
         return player.currentTime === player.duration && player.duration > 0;
       },
     });
 
-    // Loop
+    // loop
     let { loop } = player.config;
     Object.defineProperty(player.media, 'loop', {
       get() {
@@ -294,21 +229,17 @@ const vk = {
       },
     });
 
-    // Quality
+    // quality
     Object.defineProperty(player.media, 'quality', {
       get() {
         return player.embed.currentQuality || null;
       },
       set(input) {
         if (input) {
-          // VK uses hd parameter: 1=360p, 2=480p, 3=720p, 4=1080p
           const hdMap = { 360: 1, 480: 2, 720: 3, 1080: 4 };
           const hd = hdMap[input];
           if (hd) {
-            sendCommand(player, {
-              method: 'setQuality',
-              params: [hd],
-            });
+            sendCommand(player, { method: 'setQuality', params: [hd] });
           }
         }
       },
@@ -325,38 +256,24 @@ const vk = {
     }
   },
 
-  // Handle postMessage events from VK Video
   handleMessage(data) {
     const player = this;
-
-    // VK Video sends events as strings or objects
-    // Handle both formats
     let eventType = '';
     let eventData = {};
 
     if (is.string(data)) {
-      // String format could be: "started", "paused", "ended", etc.
-      // Normalize: if it contains a colon, use as-is; otherwise prefix
-      if (data.includes(':')) {
-        eventType = data;
-      }
-      else {
-        eventType = `vk_video:${data}`;
-      }
+      eventType = data.includes(':') ? data : `vk_video:${data}`;
     }
     else if (is.object(data)) {
-      // Object format: { event: 'started', duration: 0, time: 0 }
       if (data.event) {
         eventType = `vk_video:${data.event}`;
         eventData = data;
       }
       else if (data.type) {
-        // Alternative format: { type: 'timeupdate', time: 10, duration: 60 }
         eventType = `vk_video:${data.type}`;
         eventData = data;
       }
       else {
-        // Unknown object format
         if (player.config.debug) {
           player.debug.log('VK Video unknown object event:', data);
         }
@@ -369,7 +286,6 @@ const vk = {
 
     switch (eventType) {
       case 'vk_video:inited':
-        // Player API is initialized
         player.debug.log('VK Video player inited');
         player.embed.state = 'inited';
         break;
@@ -395,13 +311,10 @@ const vk = {
       case 'vk_video:timeupdate':
         if (is.number(eventData.time)) {
           player.embed.currentTime = eventData.time;
-
-          // Also update duration if provided
           if (is.number(eventData.duration) && player.media.duration !== eventData.duration) {
             player.media.duration = eventData.duration;
             triggerEvent.call(player, player.media, 'durationchange');
           }
-
           triggerEvent.call(player, player.media, 'timeupdate');
         }
         break;
@@ -418,7 +331,6 @@ const vk = {
 
       case 'vk_video:qualitychange':
         if (eventData.quality) {
-          // VK uses hd values: 1=360p, 2=480p, 3=720p, 4=1080p
           const hdMap = { 1: 360, 2: 480, 3: 720, 4: 1080 };
           player.embed.currentQuality = hdMap[eventData.quality] || null;
           triggerEvent.call(player, player.media, 'qualitychange', false, { quality: player.embed.currentQuality });
@@ -443,7 +355,6 @@ const vk = {
         break;
 
       default:
-        // Debug unknown events
         if (player.config.debug) {
           player.debug.log('VK Video unknown event:', eventType, eventData);
         }
@@ -451,16 +362,8 @@ const vk = {
     }
   },
 
-  // Cleanup
   destroy() {
-    const player = this;
-
-    if (player.embed) {
-      clearTimeout(player.embed.initTimeout);
-      if (player.embed.messageHandler) {
-        window.removeEventListener('message', player.embed.messageHandler);
-      }
-    }
+    destroy.call(this);
   },
 };
 

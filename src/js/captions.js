@@ -7,7 +7,6 @@ import controls from './controls';
 import support from './support';
 import { dedupe } from './utils/arrays';
 import browser from './utils/browser';
-import sendCommand from './utils/post-message';
 import {
   createElement,
   emptyElement,
@@ -20,6 +19,7 @@ import { on, triggerEvent } from './utils/events';
 import fetch from './utils/fetch';
 import i18n from './utils/i18n';
 import is from './utils/is';
+import sendCommand from './utils/post-message';
 import { getHTML } from './utils/strings';
 import { parseUrl } from './utils/urls';
 
