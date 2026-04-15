@@ -1235,6 +1235,12 @@ class Plyr {
       this.previewThumbnails = null;
     }
 
+    // Destroy ads plugin if active
+    if (this.ads && this.ads.manager) {
+      this.ads.destroy();
+      this.ads = null;
+    }
+
     // Remove global window/document listeners
     if (this.listeners) {
       this.listeners.global(false);

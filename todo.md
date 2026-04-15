@@ -79,3 +79,9 @@
 - [x] vimeo.js:224 — seek error не сбрасывал `seeking` state, добавлен reset + `seeked` event
 - [x] vimeo.js:275 — mute setter передавал `player.config.muted` вместо `toggle` (boolean)
 - [x] mailru-video.js:90-94 — `initTimeout` не очищался при успешной инициализации, добавлен `clearTimeout` в messageHandler
+
+## Исправления (Round 7)
+- [x] is.js:50 — `isUrl()` всегда возвращал false для https:// URL из-за `||` вместо `&&`
+- [x] ads.js — `destroy()` не вызывался при уничтожении плеера, добавлен метод `destroy()` в класс Ads и вызов в plyr.js
+- [x] listeners.js:268-273 — установка style в `null` вместо `''`, может ломать CSS в некоторых браузерах
+- [x] preview-thumbnails.js:187 — добавлена проверка `frames.length` перед доступом к `frames[0]`

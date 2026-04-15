@@ -184,7 +184,8 @@ class PreviewThumbnails {
         // If the URLs do start with '/', then they obviously don't need a prefix, so it will remain blank
         // If the thumbnail URLs start with with none of '/', 'http://' or 'https://', then we need to set their relative path to be the location of the VTT file
         if (
-          !thumbnail.frames[0].text.startsWith('/')
+          thumbnail.frames.length
+          && !thumbnail.frames[0].text.startsWith('/')
           && !thumbnail.frames[0].text.startsWith('http://')
           && !thumbnail.frames[0].text.startsWith('https://')
         ) {

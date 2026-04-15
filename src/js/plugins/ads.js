@@ -654,6 +654,10 @@ class Ads {
       this.safetyTimer = null;
     }
   };
+
+  destroy = () => {
+    destroy(this);
+  };
 }
 
 export default Ads;

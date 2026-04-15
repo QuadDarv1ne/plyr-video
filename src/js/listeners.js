@@ -265,12 +265,12 @@ class Listeners {
       // If not active, remove styles
       if (!active) {
         if (useNativeAspectRatio) {
-          target.style.width = null;
-          target.style.height = null;
+          target.style.width = '';
+          target.style.height = '';
         }
         else {
-          target.style.maxWidth = null;
-          target.style.margin = null;
+          target.style.maxWidth = '';
+          target.style.margin = '';
         }
         return;
       }
