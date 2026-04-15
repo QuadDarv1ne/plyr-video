@@ -18,8 +18,7 @@ function parseId(url) {
     return null;
   }
 
-  // Match various Rutube URL formats
-  const regex = /rutube\.ru\/(?:play\/embed\/|video\/|embed\/)([a-f0-9]+)(?:\/)?/i;
+  const regex = /rutube\.ru\/(?:play\/embed\/|video\/|embed\/)([a-f0-9]+)\/?/i;
   const match = url.match(regex);
   return match && match[1] ? match[1] : url;
 }
@@ -120,7 +119,7 @@ const rutube = {
 
     // Create wrapper for poster
     const wrapper = createElement('div', {
-      class: player.config.classNames.embedContainer,
+      className: player.config.classNames.embedContainer,
       'data-poster': player.poster,
     });
     wrapper.appendChild(iframe);
@@ -208,7 +207,7 @@ const rutube = {
         return player.embed.currentTime || 0;
       },
       set(time) {
-        const { media, paused } = player;
+        const { media } = player;
 
         // Set seeking state and trigger event
         media.seeking = true;
@@ -414,7 +413,7 @@ const rutube = {
       case 'player:currentQuality':
         if (data) {
           const quality = Number(data.quality || data);
-          if (!isNaN(quality)) {
+          if (!Number.isNaN(quality)) {
             player.embed.currentQuality = quality;
             triggerEvent.call(player, player.media, 'qualitychange', false, { quality });
           }

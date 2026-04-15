@@ -5,8 +5,8 @@
 import html5 from './html5';
 import mailru from './plugins/mailru-video';
 import rutube from './plugins/rutube';
-import vk from './plugins/vk-video';
 import vimeo from './plugins/vimeo';
+import vk from './plugins/vk-video';
 import yandex from './plugins/yandex-video';
 import youtube from './plugins/youtube';
 import { createElement, toggleClass, wrap } from './utils/elements';

@@ -7,7 +7,7 @@
  * @param {object} player - The Plyr player instance
  * @param {string|object} typeOrParams - The command type or full params object
  * @param {object} data - Additional data (only used when typeOrParams is a string)
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} - Whether the message was sent successfully
  */
 export function sendCommand(player, typeOrParams, data = {}) {
   if (!player.embed || !player.embed.iframe) {

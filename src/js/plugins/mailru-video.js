@@ -65,7 +65,7 @@ const mailru = {
   },
 
   // Get the media title
-  getTitle(videoId) {
+  getTitle(_videoId) {
     // Mail.ru doesn't have a public metadata API
     // Title should be set manually if needed
   },
@@ -124,7 +124,7 @@ const mailru = {
 
     // Create wrapper for poster
     const wrapper = createElement('div', {
-      class: player.config.classNames.embedContainer,
+      className: player.config.classNames.embedContainer,
       'data-poster': player.poster,
     });
     wrapper.appendChild(iframe);

@@ -118,7 +118,7 @@ const yandex = {
 
     // Create wrapper for poster
     const wrapper = createElement('div', {
-      class: player.config.classNames.embedContainer,
+      className: player.config.classNames.embedContainer,
       'data-poster': player.poster,
     });
     wrapper.appendChild(iframe);
@@ -193,7 +193,7 @@ const yandex = {
         return player.embed.currentTime || 0;
       },
       set(time) {
-        const { media, paused } = player;
+        const { media } = player;
 
         // Set seeking state and trigger event
         media.seeking = true;
@@ -399,7 +399,7 @@ const yandex = {
       case 'player:currentQuality':
         if (data) {
           const quality = Number(data.quality || data);
-          if (!isNaN(quality)) {
+          if (!Number.isNaN(quality)) {
             player.embed.currentQuality = quality;
             triggerEvent.call(player, player.media, 'qualitychange', false, { quality });
           }

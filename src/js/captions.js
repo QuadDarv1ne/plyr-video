@@ -5,9 +5,9 @@
 
 import controls from './controls';
 import support from './support';
-import sendCommand from './utils/post-message';
 import { dedupe } from './utils/arrays';
 import browser from './utils/browser';
+import sendCommand from './utils/post-message';
 import {
   createElement,
   emptyElement,

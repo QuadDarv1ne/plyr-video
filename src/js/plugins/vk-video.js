@@ -21,7 +21,7 @@ function parseId(url) {
   // https://vk.com/video-123456_789012345
   // https://vk.ru/video_ext.php?oid=-123456&id=789012345
   // oid=-123456&id=789012345&hash=abc123
-  const regex = /(?:vk\.com|vk\.ru).*video.*[?&]oid=([^&]+).*?[?&]id=([^&]+)/i;
+  const regex = /(?:vk\.com|vk\.ru).*video.*[?&]oid=([^&]+).*id=([^&]+)/i;
   const match = url.match(regex);
   if (match && match[1] && match[2]) {
     return `oid=${match[1]}&id=${match[2]}`;
@@ -136,7 +136,7 @@ const vk = {
 
     // Create wrapper for poster
     const wrapper = createElement('div', {
-      class: player.config.classNames.embedContainer,
+      className: player.config.classNames.embedContainer,
       'data-poster': player.poster,
     });
     wrapper.appendChild(iframe);
@@ -206,7 +206,7 @@ const vk = {
         return player.embed.currentTime || 0;
       },
       set(time) {
-        const { media, paused } = player;
+        const { media } = player;
 
         // Set seeking state and trigger event
         media.seeking = true;
