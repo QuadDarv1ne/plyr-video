@@ -222,7 +222,9 @@ const vimeo = {
           // Restore volume
           .then(() => restorePause && embed.setVolume(volume))
           .catch(() => {
-            // Do nothing
+            // Reset seeking state on error
+            media.seeking = false;
+            triggerEvent.call(player, media, 'seeked');
           });
       },
     });
@@ -270,7 +272,7 @@ const vimeo = {
       set(input) {
         const toggle = is.boolean(input) ? input : false;
 
-        player.embed.setMuted(toggle ? true : player.config.muted).then(() => {
+        player.embed.setMuted(toggle).then(() => {
           muted = toggle;
           triggerEvent.call(player, player.media, 'volumechange');
         });
@@ -321,7 +323,7 @@ const vimeo = {
     Promise.all([player.embed.getVideoWidth(), player.embed.getVideoHeight()]).then((dimensions) => {
       const [width, height] = dimensions;
       player.embed.ratio = roundAspectRatio(width, height);
-      setAspectRatio.call(this);
+      setAspectRatio.call(player);
     });
 
     // Set autopause

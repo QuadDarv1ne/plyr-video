@@ -107,6 +107,12 @@ const mailru = {
         return;
       }
 
+      // Clear init timeout on first message
+      if (player.embed.initTimeout) {
+        clearTimeout(player.embed.initTimeout);
+        player.embed.initTimeout = null;
+      }
+
       let msg;
       try {
         msg = JSON.parse(event.data);

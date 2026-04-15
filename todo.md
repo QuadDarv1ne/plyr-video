@@ -72,3 +72,10 @@
 - post-message.js: добавлен параметр `targetOrigin` (по умолчанию `'*'`)
 - Build: gulp build (ESM, Rollup, Babel), lint: eslint + stylelint + remark
 - Нет тестового покрытия ни для одного провайдера
+
+## Исправления (Round 6)
+- [x] controls.js:1827 — инвертированное условие в setMarkers: `if (point.label) return` → `if (!point.label) return`
+- [x] vimeo.js:324 — `setAspectRatio.call(this)` → `setAspectRatio.call(player)` (неверный контекст)
+- [x] vimeo.js:224 — seek error не сбрасывал `seeking` state, добавлен reset + `seeked` event
+- [x] vimeo.js:275 — mute setter передавал `player.config.muted` вместо `toggle` (boolean)
+- [x] mailru-video.js:90-94 — `initTimeout` не очищался при успешной инициализации, добавлен `clearTimeout` в messageHandler

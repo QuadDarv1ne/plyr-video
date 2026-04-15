@@ -1825,7 +1825,7 @@ const controls = {
       if (tipElement) {
         // Show on hover
         markerElement.addEventListener('mouseenter', () => {
-          if (point.label) return;
+          if (!point.label) return;
           tipElement.style.left = left;
           tipElement.innerHTML = point.label;
           toggleTip(true);
