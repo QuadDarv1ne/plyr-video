@@ -123,7 +123,27 @@ export function createEmbed(provider, options) {
   return { iframe, videoId, config };
 }
 
-// Define shared media property helpers
+// Shared iframe wrapper creation for VK/Mail.ru-like providers
+export function createIframeWrapper(player, id, src, poster) {
+  const iframe = createElement('iframe');
+  iframe.setAttribute('id', id);
+  iframe.setAttribute('allowfullscreen', '');
+  iframe.setAttribute(
+    'allow',
+    'autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer',
+  );
+  iframe.setAttribute('src', src);
+
+  const wrapper = createElement('div', {
+    className: player.config.classNames.embedContainer,
+    'data-poster': poster,
+  });
+  wrapper.appendChild(iframe);
+
+  return { iframe, wrapper };
+}
+
+// Shared media properties initialization
 export function defineMediaProperties(player, videoId, embedUrl) {
   // currentTime
   Object.defineProperty(player.media, 'currentTime', {

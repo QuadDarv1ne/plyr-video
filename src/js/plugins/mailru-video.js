@@ -1,8 +1,7 @@
 // ==========================================================================
 // Mail.ru Video plugin
 // ==========================================================================
-import ui from '../ui';
-import { createElement, replaceElement } from '../utils/elements';
+import { replaceElement } from '../utils/elements';
 import { triggerEvent } from '../utils/events';
 import is from '../utils/is';
 import sendCommand from '../utils/post-message';
@@ -10,6 +9,7 @@ import { generateId } from '../utils/strings';
 import {
   assurePlaybackState,
   baseSetup,
+  createIframeWrapper,
   destroy,
   isOriginAllowed,
 } from './base-embed';
@@ -83,22 +83,9 @@ const mailru = {
     const params = [];
     if (config.autoplay) params.push('autoplay=1');
     params.push('wmode=opaque');
+    const finalUrl = `${embedUrl}?${params.join('&')}`;
 
-    const iframe = createElement('iframe');
-    iframe.setAttribute('id', id);
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute(
-      'allow',
-      'autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer',
-    );
-    iframe.setAttribute('src', `${embedUrl}?${params.join('&')}`);
-
-    const wrapper = createElement('div', {
-      className: player.config.classNames.embedContainer,
-      'data-poster': player.poster,
-    });
-    wrapper.appendChild(iframe);
-
+    const { iframe, wrapper } = createIframeWrapper(player, id, finalUrl, player.poster);
     player.media = replaceElement(wrapper, player.media);
 
     player.embed = {
@@ -272,11 +259,6 @@ const mailru = {
 
     // Get title
     mailru.getTitle.call(player, videoId);
-
-    // Rebuild UI
-    if (config.customControls) {
-      setTimeout(() => ui.build.call(player), 0);
-    }
   },
 
   handleStringEvent(data) {

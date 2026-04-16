@@ -1,9 +1,7 @@
 // ==========================================================================
 // VK Video plugin
 // ==========================================================================
-
-import ui from '../ui';
-import { createElement, replaceElement } from '../utils/elements';
+import { replaceElement } from '../utils/elements';
 import { triggerEvent } from '../utils/events';
 import is from '../utils/is';
 import sendCommand from '../utils/post-message';
@@ -11,8 +9,8 @@ import { generateId } from '../utils/strings';
 import {
   assurePlaybackState,
   baseSetup,
+  createIframeWrapper,
   destroy,
-  fetchTitle,
   isOriginAllowed,
 } from './base-embed';
 
@@ -21,6 +19,7 @@ function parseId(url) {
   if (is.empty(url)) {
     return null;
   }
+
   // Match: vk.com/video-123_456 or vk.ru/video?oid=-123&id=456
   const oidMatch = url.match(/[?&]oid=([^&]+)/i);
   const idMatch2 = url.match(/[?&]id=([^&]+)/i);
@@ -33,6 +32,7 @@ function parseId(url) {
   if (idMatch) {
     return `oid=${idMatch[1]}&id=${idMatch[2]}`;
   }
+
   return url;
 }
 
@@ -52,13 +52,14 @@ const vk = {
   ready() {
     const player = this;
     const config = player.config.vk;
-
     let source = player.media.getAttribute('src');
+
     if (is.empty(source)) {
       source = player.media.getAttribute(player.config.attributes.embed.id);
     }
 
     const videoParams = parseId(source);
+
     if (is.empty(videoParams)) {
       player.debug.error('VK Video: No valid video ID found');
       return;
@@ -70,26 +71,15 @@ const vk = {
     const oid = oidMatch ? oidMatch[1] : '';
     const videoId = idMatch ? idMatch[1] : '';
 
-    const iframe = createElement('iframe');
-    iframe.setAttribute('id', id);
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer');
-
     const embedUrl = `https://vk.ru/video_ext.php?${videoParams}&js_api=1`;
     const params = [];
+
     if (config.autoplay) params.push('autoplay=1');
     if (config.hd) params.push(`hd=${config.hd}`);
     if (config.startTime) params.push(`t=${config.startTime}`);
-
     const finalUrl = params.length ? `${embedUrl}&${params.join('&')}` : embedUrl;
-    iframe.setAttribute('src', finalUrl);
 
-    const wrapper = createElement('div', {
-      'className': player.config.classNames.embedContainer,
-      'data-poster': player.poster,
-    });
-    wrapper.appendChild(iframe);
-
+    const { iframe, wrapper } = createIframeWrapper(player, id, finalUrl, player.poster);
     player.media = replaceElement(wrapper, player.media);
 
     player.embed = {
@@ -130,8 +120,7 @@ const vk = {
 
       try {
         vk.handleMessage.call(player, data);
-      }
-      catch (err) {
+      } catch (err) {
         player.debug.error('VK Video: Error handling message:', err);
       }
     };
@@ -256,7 +245,6 @@ const vk = {
 
     // Rebuild UI
     if (config.customControls) {
-      setTimeout(() => ui.build.call(player), 0);
     }
   },
 
@@ -267,24 +255,20 @@ const vk = {
 
     if (is.string(data)) {
       eventType = data.includes(':') ? data : `vk_video:${data}`;
-    }
-    else if (is.object(data)) {
+    } else if (is.object(data)) {
       if (data.event) {
         eventType = `vk_video:${data.event}`;
         eventData = data;
-      }
-      else if (data.type) {
+      } else if (data.type) {
         eventType = `vk_video:${data.type}`;
         eventData = data;
-      }
-      else {
+      } else {
         if (player.config.debug) {
           player.debug.log('VK Video unknown object event:', data);
         }
         return;
       }
-    }
-    else {
+    } else {
       return;
     }
 
@@ -337,7 +321,9 @@ const vk = {
         if (eventData.quality) {
           const hdMap = { 1: 360, 2: 480, 3: 720, 4: 1080 };
           player.embed.currentQuality = hdMap[eventData.quality] || null;
-          triggerEvent.call(player, player.media, 'qualitychange', false, { quality: player.embed.currentQuality });
+          triggerEvent.call(player, player.media, 'qualitychange', false, {
+            quality: player.embed.currentQuality,
+          });
         }
         break;
 
