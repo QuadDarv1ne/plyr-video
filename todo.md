@@ -122,3 +122,8 @@
 - [x] Вынес общий `handleMessage` в `handleDefaultMessage()` для Rutube/Yandex
 - [x] Убрал неиспользуемый импорт `ui` из rutube.js и yandex-video.js
 - [x] Сократил код на 75 строк (190 удалено, 115 добавлено)
+
+## Оптимизация (Round 13)
+- [x] Добавлен `createIframeWrapper()` в base-embed.js для VK/Mail.ru
+- [x] Убраны неиспользуемые импорты из vk-video.js и mailru-video.js
+- [x] Сократил код ещё на 12 строк (53 удалено, 41 добавлено)
