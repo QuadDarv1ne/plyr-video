@@ -127,3 +127,8 @@
 - [x] Добавлен `createIframeWrapper()` в base-embed.js для VK/Mail.ru
 - [x] Убраны неиспользуемые импорты из vk-video.js и mailru-video.js
 - [x] Сократил код ещё на 12 строк (53 удалено, 41 добавлено)
+
+## Оптимизация (Round 14)
+- [x] Убрано дублирование `assurePlaybackState` из youtube.js и vimeo.js
+- [x] Оба провайдера теперь импортируют из base-embed.js
+- [x] Сократил код ещё на 8 строк (10 удалено, 2 добавлено)
