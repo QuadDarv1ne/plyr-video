@@ -101,7 +101,7 @@
 - [ ] Добавить unit-тесты для mailru-video.js
 
 ## Текущие проблемы (Round 9)
-- [ ] Mail.ru: `getTitle()` не реализовано — нет fetchTitle вызова в ready()
+- [x] Mail.ru: `getTitle()` не реализовано — нет fetchTitle вызова в ready()
 - [ ] VK: `getTitle()` использует недокументированный endpoint `vk.ru/al_video.php` — может сломаться
 - [ ] VK: `playbackRate` getter/setter — заглушка, API не поддерживает изменение скорости
 - [ ] VK: Captions не поддерживаются API
@@ -109,3 +109,8 @@
 - [ ] Все провайдеры: Нет тестового покрытия (0%)
 - [ ] Rutube: Тестирование с реальными видео (в demo placeholder ID)
 - [ ] Yandex: Тестирование с реальным видео (в demo placeholder `your-video-id`)
+
+## Исправления (Round 10)
+- [x] Mail.ru: Добавлен `getTitle()` метод с fallback title из video ID
+- [x] Mail.ru: Исправлено дублирование `clearTimeout` в messageHandler
+- [x] Demo: Обновлены video ID для Rutube, Yandex, Mail.ru (убраны placeholder)
