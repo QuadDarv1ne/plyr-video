@@ -117,3 +117,8 @@
 
 ## Исправления (Round 11)
 - [x] VK: `getTitle()` — endpoint возвращает HTML, не JSON. Теперь использует fallback title
+
+## Оптимизация (Round 12)
+- [x] Вынес общий `handleMessage` в `handleDefaultMessage()` для Rutube/Yandex
+- [x] Убрал неиспользуемый импорт `ui` из rutube.js и yandex-video.js
+- [x] Сократил код на 75 строк (190 удалено, 115 добавлено)
