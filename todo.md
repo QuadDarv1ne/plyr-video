@@ -107,10 +107,13 @@
 - [ ] VK: Captions не поддерживаются API
 - [ ] Mail.ru: Нет поддержки quality, captions, speed
 - [ ] Все провайдеры: Нет тестового покрытия (0%)
-- [ ] Rutube: Тестирование с реальными видео (в demo placeholder ID)
-- [ ] Yandex: Тестирование с реальным видео (в demo placeholder `your-video-id`)
+- [ ] Rutube: Тестирование с реальными видео (в demo placeholder ID не работает)
+- [ ] Yandex: Тестирование с реальным видео (в demo placeholder ID не работает)
 
 ## Исправления (Round 10)
 - [x] Mail.ru: Добавлен `getTitle()` метод с fallback title из video ID
 - [x] Mail.ru: Исправлено дублирование `clearTimeout` в messageHandler
 - [x] Demo: Обновлены video ID для Rutube, Yandex, Mail.ru (убраны placeholder)
+
+## Исправления (Round 11)
+- [x] VK: `getTitle()` — endpoint возвращает HTML, не JSON. Теперь использует fallback title
