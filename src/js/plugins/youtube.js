@@ -11,6 +11,7 @@ import loadImage from '../utils/load-image';
 import loadScript from '../utils/load-script';
 import { extend } from '../utils/objects';
 import { format, generateId } from '../utils/strings';
+import { assurePlaybackState } from './base-embed';
 import { roundAspectRatio, setAspectRatio } from '../utils/style';
 
 // Parse YouTube ID from URL
@@ -24,11 +25,6 @@ function parseId(url) {
   return match && match[2] ? match[2] : url;
 }
 
-// Set playback state and trigger change (only on actual change)
-function assurePlaybackState(play) {
-  if (play && !this.embed.hasPlayed) {
-    this.embed.hasPlayed = true;
-  }
   if (this.media.paused === play) {
     this.media.paused = !play;
     triggerEvent.call(this, this.media, play ? 'play' : 'pause');

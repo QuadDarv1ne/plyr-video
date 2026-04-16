@@ -12,6 +12,7 @@ import is from '../utils/is';
 import loadScript from '../utils/load-script';
 import { format, stripHTML } from '../utils/strings';
 import { roundAspectRatio, setAspectRatio } from '../utils/style';
+import { assurePlaybackState } from './base-embed';
 import { buildUrlParams } from '../utils/urls';
 
 // Parse Vimeo ID from URL
@@ -45,11 +46,6 @@ function parseHash(url) {
   return found && found.length === 5 ? found[4] : null;
 }
 
-// Set playback state and trigger change (only on actual change)
-function assurePlaybackState(play) {
-  if (play && !this.embed.hasPlayed) {
-    this.embed.hasPlayed = true;
-  }
   if (this.media.paused === play) {
     this.media.paused = !play;
     triggerEvent.call(this, this.media, play ? 'play' : 'pause');
