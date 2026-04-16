@@ -21,6 +21,10 @@
 - [ ] Покрыть провайдеры unit-тестами
   - Тестов нет вообще (.test/.spec файлы отсутствуют)
   - Приоритет: rutube > yandex > vk > mailru
+  - [ ] Добавить unit-тесты для rutube.js
+  - [ ] Добавить unit-тесты для yandex-video.js
+  - [ ] Добавить unit-тесты для vk-video.js
+  - [ ] Добавить unit-тесты для mailru-video.js
 
 ## Rutube (Приоритет: Высокий) ✅
 - [x] Создать `src/js/plugins/rutube.js` — провайдер с postMessage API
@@ -35,6 +39,7 @@
   - В demo используется placeholder ID `1e5c8c87e8d0d8d8e8d0d8d8e8d0d8d8`
 - [x] Добавлен в demo страницу
 - [x] Origin validation: использует `Array.includes()` для точного совпадения — безопасно
+- [ ] Добавить unit-тесты для rutube.js
 
 ## Yandex Cloud Video (Приоритет: Средний) ✅
 - [x] Получить полную документацию по iframe SDK
@@ -44,6 +49,7 @@
 - [ ] Протестировать с реальным видео из Yandex Cloud
   - В demo используется placeholder `your-video-id`
 - [x] Origin validation: использует `Array.includes()` для точного совпадения — безопасно
+- [ ] Добавить unit-тесты для yandex-video.js
 
 ## VK Video (Приоритет: По возможности) ✅
 - [x] Найти/получить документацию по VK Video iframe API
@@ -54,6 +60,7 @@
 - [!] `playbackRate` getter/setter — заглушка, API не поддерживает
 - [!] Captions не поддерживаются
 - [!] `getTitle()` — недокументированный endpoint, может сломаться
+- [ ] Добавить unit-тесты для vk-video.js
 
 ## Mail.ru Video (Приоритет: Низкий)
 - [x] Mail.ru Video — провайдер создан, базовая поддержка
@@ -64,6 +71,7 @@
   - Добавлен initTimeout (15s) — был пропущен
 - [x] Coub — платформа закрыта (2024), не поддерживается
 - [ ] SMOTRESHKA, PEPER.TV и др. — по запросу
+- [ ] Добавить unit-тесты для mailru-video.js
 
 ## Технические заметки
 - Создан `src/js/plugins/base-embed.js` — общий модуль для postMessage-провайдеров
@@ -85,3 +93,19 @@
 - [x] ads.js — `destroy()` не вызывался при уничтожении плеера, добавлен метод `destroy()` в класс Ads и вызов в plyr.js
 - [x] listeners.js:268-273 — установка style в `null` вместо `''`, может ломать CSS в некоторых браузерах
 - [x] preview-thumbnails.js:187 — добавлена проверка `frames.length` перед доступом к `frames[0]`
+
+## Исправления (Round 8) — Добавить unit-тесты для всех провайдеров
+- [ ] Добавить unit-тесты для rutube.js
+- [ ] Добавить unit-тесты для yandex-video.js
+- [ ] Добавить unit-тесты для vk-video.js
+- [ ] Добавить unit-тесты для mailru-video.js
+
+## Текущие проблемы (Round 9)
+- [ ] Mail.ru: `getTitle()` не реализовано — нет fetchTitle вызова в ready()
+- [ ] VK: `getTitle()` использует недокументированный endpoint `vk.ru/al_video.php` — может сломаться
+- [ ] VK: `playbackRate` getter/setter — заглушка, API не поддерживает изменение скорости
+- [ ] VK: Captions не поддерживаются API
+- [ ] Mail.ru: Нет поддержки quality, captions, speed
+- [ ] Все провайдеры: Нет тестового покрытия (0%)
+- [ ] Rutube: Тестирование с реальными видео (в demo placeholder ID)
+- [ ] Yandex: Тестирование с реальным видео (в demo placeholder `your-video-id`)
