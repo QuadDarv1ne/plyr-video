@@ -1,8 +1,6 @@
 // ==========================================================================
 // Yandex Cloud Video plugin
 // ==========================================================================
-
-import ui from '../ui';
 import { triggerEvent } from '../utils/events';
 import is from '../utils/is';
 import sendCommand from '../utils/post-message';
@@ -13,13 +11,7 @@ import {
   defineMediaProperties,
   destroy,
   fetchTitle,
-  handleCaptionList,
-  handleChangeState,
-  handleCueChange,
-  handleCurrentQuality,
-  handleCurrentTime,
-  handlePlayOptionsLoaded,
-  handleQualityList,
+  handleDefaultMessage,
 } from './base-embed';
 
 // Parse Yandex Cloud Video ID from URL
@@ -27,6 +19,7 @@ function parseId(url) {
   if (is.empty(url)) {
     return null;
   }
+
   const regex = /(?:video\.cloud\.yandex\.net\/player\/|cloud\.yandex\.ru.*video\/)([a-f0-9-]+)/i;
   const match = url.match(regex);
   return match && match[1] ? match[1] : url;
@@ -44,13 +37,14 @@ const yandex = {
   ready() {
     const player = this;
     const config = player.config.yandex;
-
     let source = player.media.getAttribute('src');
+
     if (is.empty(source)) {
       source = player.media.getAttribute(player.config.attributes.embed.id);
     }
 
     const videoId = parseId(source);
+
     if (is.empty(videoId)) {
       player.debug.error('Yandex Cloud Video: No valid video ID found');
       return;
@@ -58,6 +52,7 @@ const yandex = {
 
     const embedUrl = `https://video.cloud.yandex.net/player/${videoId}`;
     const params = [];
+
     if (config.autoplay) params.push('autoplay=true');
     if (config.muted) params.push('muted=true');
     if (config.loop) params.push('loop=true');
@@ -89,83 +84,7 @@ const yandex = {
   },
 
   handleMessage(msg) {
-    const player = this;
-    const { type, data } = msg;
-
-    switch (type) {
-      case 'player:ready':
-        player.debug.log('Yandex Cloud Video player ready');
-        triggerEvent.call(player, player.media, 'timeupdate');
-        break;
-
-      case 'player:changeState':
-        handleChangeState(player, data);
-        break;
-
-      case 'player:durationChange':
-        if (data && is.number(data.duration)) {
-          player.media.duration = data.duration;
-          triggerEvent.call(player, player.media, 'durationchange');
-        }
-        break;
-
-      case 'player:currentTime':
-        handleCurrentTime(player, data);
-        break;
-
-      case 'player:volumeChange':
-        if (data && is.number(data.volume)) {
-          player.media.volume = data.volume;
-          triggerEvent.call(player, player.media, 'volumechange');
-        }
-        break;
-
-      case 'player:playbackSpeedChanged':
-        if (data && is.number(data.speed)) {
-          player.media.playbackRate = data.speed;
-          triggerEvent.call(player, player.media, 'ratechange');
-        }
-        break;
-
-      case 'player:qualityList':
-        handleQualityList(player, data);
-        break;
-
-      case 'player:currentQuality':
-        handleCurrentQuality(player, data);
-        break;
-
-      case 'player:playOptionsLoaded':
-        handlePlayOptionsLoaded(player, data);
-        break;
-
-      case 'player:captionList':
-        handleCaptionList(player, data);
-        break;
-
-      case 'player:cueChange':
-        handleCueChange(player, data);
-        break;
-
-      case 'player:error':
-        player.media.error = {
-          code: data && data.type ? data.type : 1,
-          message: (data && data.message) || 'Yandex Cloud Video playback error',
-        };
-        triggerEvent.call(player, player.media, 'error');
-        break;
-
-      case 'player:playComplete':
-        player.media.paused = true;
-        triggerEvent.call(player, player.media, 'ended');
-        break;
-
-      default:
-        if (player.config.debug) {
-          player.debug.log('Yandex Cloud Video unknown event:', type, data);
-        }
-        break;
-    }
+    handleDefaultMessage.call(this, msg, 'Yandex Cloud Video');
   },
 
   destroy() {
