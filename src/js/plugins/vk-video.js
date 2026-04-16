@@ -42,7 +42,11 @@ const vk = {
   },
 
   getTitle(oid, videoId) {
-    fetchTitle.call(this, `https://vk.ru/al_video.php?act=show&al=1&video=${oid}_${videoId}`, 'VK Video');
+    // VK API doesn't provide a public JSON endpoint for video titles
+    // Using video ID as fallback title
+    if (videoId && !this.config.title) {
+      this.config.title = `VK Video: ${videoId}`;
+    }
   },
 
   ready() {
