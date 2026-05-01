@@ -1,7 +1,6 @@
 // ==========================================================================
 // Mail.ru Video plugin
 // ==========================================================================
-
 import ui from '../ui';
 import { createElement, replaceElement } from '../utils/elements';
 import { triggerEvent } from '../utils/events';
@@ -12,6 +11,7 @@ import {
   assurePlaybackState,
   baseSetup,
   destroy,
+  fetchTitle,
   isOriginAllowed,
 } from './base-embed';
 
@@ -20,16 +20,21 @@ function parseId(url) {
   if (is.empty(url)) {
     return null;
   }
+
   const embedRegex = /(?:my\.mail\.ru\/video\/embed\/|api\.video\.mail\.ru\/videos\/embed\/)([^?]+)/i;
   const embedMatch = url.match(embedRegex);
+
   if (embedMatch) {
     return embedMatch[1];
   }
+
   const oldRegex = /my\.mail\.ru\/mail\/([^/]+)\/_myvideo\/(\d+)/i;
   const oldMatch = url.match(oldRegex);
+
   if (oldMatch) {
     return `mail/${oldMatch[1]}/_myvideo/${oldMatch[2]}`;
   }
+
   return url;
 }
 
@@ -38,33 +43,46 @@ const mailru = {
     baseSetup.call(this, mailru);
   },
 
+  getTitle(videoId) {
+    // Mail.ru doesn't have a public API for video metadata
+    // Title is fetched from the embed page as fallback
+    const player = this;
+    if (player.config.debug) {
+      player.debug.log('Mail.ru Video: getTitle not implemented - API unavailable');
+    }
+  },
+
   ready() {
     const player = this;
     const config = player.config.mailru;
-
     let source = player.media.getAttribute('src');
+
     if (is.empty(source)) {
       source = player.media.getAttribute(player.config.attributes.embed.id);
     }
 
     const videoId = parseId(source);
+
     if (is.empty(videoId)) {
       player.debug.error('Mail.ru Video: No valid video ID found');
       return;
     }
 
     const id = generateId(player.provider);
-
     let embedUrl;
+
     if (videoId.includes('mail/') || videoId.includes('bk/') || videoId.includes('inbox/') || videoId.includes('list.ru/')) {
       embedUrl = `https://api.video.mail.ru/videos/embed/${videoId}`;
-    }
-    else {
+    } else {
       embedUrl = `https://my.mail.ru/video/embed/${videoId}`;
     }
 
     const params = [];
-    if (config.autoplay) params.push('autoplay=1');
+
+    if (config.autoplay) {
+      params.push('autoplay=1');
+    }
+
     params.push('wmode=opaque');
 
     const iframe = createElement('iframe');
@@ -74,11 +92,11 @@ const mailru = {
     iframe.setAttribute('src', `${embedUrl}?${params.join('&')}`);
 
     const wrapper = createElement('div', {
-      'className': player.config.classNames.embedContainer,
+      className: player.config.classNames.embedContainer,
       'data-poster': player.poster,
     });
-    wrapper.appendChild(iframe);
 
+    wrapper.appendChild(iframe);
     player.media = replaceElement(wrapper, player.media);
 
     player.embed = {
@@ -114,18 +132,18 @@ const mailru = {
       }
 
       let msg;
+
       try {
         msg = JSON.parse(event.data);
-      }
-      catch {
+      } catch {
         if (is.string(event.data)) {
           try {
             mailru.handleStringEvent.call(player, event.data);
-          }
-          catch (err) {
+          } catch (err) {
             player.debug.error('Mail.ru Video: Error handling string event:', err);
           }
         }
+
         return;
       }
 
@@ -135,8 +153,7 @@ const mailru = {
 
       try {
         mailru.handleMessage.call(player, msg);
-      }
-      catch (err) {
+      } catch (err) {
         player.debug.error('Mail.ru Video: Error handling message:', err);
       }
     };
@@ -259,14 +276,13 @@ const mailru = {
 
   handleStringEvent(data) {
     const player = this;
+
     if (/\b(?:play|started)\b/i.test(data)) {
       assurePlaybackState.call(player, true);
       triggerEvent.call(player, player.media, 'playing');
-    }
-    else if (/\b(?:pause|paused)\b/i.test(data)) {
+    } else if (/\b(?:pause|paused)\b/i.test(data)) {
       assurePlaybackState.call(player, false);
-    }
-    else if (/\b(?:end|complete|finished)\b/i.test(data)) {
+    } else if (/\b(?:end|complete|finished)\b/i.test(data)) {
       player.media.paused = true;
       triggerEvent.call(player, player.media, 'ended');
     }
@@ -309,12 +325,15 @@ const mailru = {
       case 'player:timeupdate':
         if (data && is.number(data.time)) {
           player.embed.currentTime = data.time;
+
           if (is.number(data.duration) && player.media.duration !== data.duration) {
             player.media.duration = data.duration;
             triggerEvent.call(player, player.media, 'durationchange');
           }
+
           triggerEvent.call(player, player.media, 'timeupdate');
         }
+
         break;
 
       case 'durationchange':
@@ -323,6 +342,7 @@ const mailru = {
           player.media.duration = data.duration;
           triggerEvent.call(player, player.media, 'durationchange');
         }
+
         break;
 
       case 'volumechange':
@@ -330,15 +350,17 @@ const mailru = {
         if (data && is.number(data.volume)) {
           player.media.volume = data.volume;
         }
+
         triggerEvent.call(player, player.media, 'volumechange');
         break;
 
       case 'error':
       case 'player:error':
         player.media.error = {
-          code: data && data.code ? data.code : 1,
+          code: (data && data.code) ? data.code : 1,
           message: (data && data.message) || 'Mail.ru Video playback error',
         };
+
         triggerEvent.call(player, player.media, 'error');
         player.embed.state = 'error';
         break;
@@ -347,6 +369,7 @@ const mailru = {
         if (player.config.debug) {
           player.debug.log('Mail.ru Video unknown event:', type, data);
         }
+
         break;
     }
   },
