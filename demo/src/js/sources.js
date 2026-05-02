@@ -130,47 +130,43 @@ const sources = {
       },
     ],
   },
-
   // Russian video platforms
   rutube: {
     type: 'video',
     ratio: '16:9',
     sources: [
       {
-        src: 'https://rutube.ru/play/embed/1e5c8c87e8d0d8d8e8d0d8d8e8d0d8d8',
+        src: 'https://rutube.ru/play/embed/91d051245c0cf5703957fe07f7b11b98',
         provider: 'rutube',
       },
     ],
   },
-
   yandex: {
     type: 'video',
     ratio: '16:9',
     sources: [
       {
-        src: 'https://video.cloud.yandex.net/player/your-video-id',
+        src: 'https://video.cloud.yandex.net/player/7c10a15d-1e87-4d6e-a0e7-8f0f5e5c5e5d',
         provider: 'yandex',
       },
     ],
   },
-
   vk: {
     type: 'video',
     ratio: '16:9',
     sources: [
       {
-        src: 'https://vk.com/video-161895864_456241478',
+        src: 'https://vk.com/video-40602947_456239058',
         provider: 'vk',
       },
     ],
   },
-
   mailru: {
     type: 'video',
     ratio: '16:9',
     sources: [
       {
-        src: 'https://my.mail.ru/video/embed/1234567890',
+        src: 'https://my.mail.ru/video/embed/6353406850491756603',
         provider: 'mailru',
       },
     ],
