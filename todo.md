@@ -76,6 +76,8 @@
 - post-message.js: добавлен параметр `targetOrigin` (по умолчанию `'*'`)
 - Build: gulp build (ESM, Rollup, Babel), lint: eslint + stylelint + remark
 - Нет тестового покрытия ни для одного провайдера
+- ✅ Сборка проходит успешно без ошибок (gulp build)
+- ✅ Линтинг проходит успешно (eslint + stylelint)
 
 ## Исправления (Round 6)
 - [x] controls.js:1827 — инвертированное условие в setMarkers: `if (point.label) return` → `if (!point.label) return`
@@ -106,3 +108,10 @@
 - [x] Все провайдеры теперь проходят ESLint без ошибок
 - [x] Сборка проходит успешно (gulp build)
 - [x] Изменения отправлены в main branch
+
+## Текущий статус (2026-05-02)
+- ✅ Линтинг проходит успешно (eslint + stylelint)
+- ✅ Сборка проходит успешно без ошибок
+- ✅ Все российские платформы интегрированы: Rutube, Yandex, VK, Mail.ru
+- ⏳ Требуется тестирование с реальными видео
+- ⏳ Требуется покрытие unit-тестами
