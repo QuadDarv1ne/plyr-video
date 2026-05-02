@@ -137,7 +137,7 @@ const sources = {
     ratio: '16:9',
     sources: [
       {
-        src: 'https://rutube.ru/play/embed/b3c1c7f7e8d0d8d8e8d0d8d8e8d0d8d8',
+        src: 'https://rutube.ru/play/embed/90d5a1d7e8d0d8d8e8d0d8d8e8d0d8d8',
         provider: 'rutube',
       },
     ],
@@ -159,7 +159,7 @@ const sources = {
     ratio: '16:9',
     sources: [
       {
-        src: 'https://vk.com/video-222953717_456239018',
+        src: 'https://vk.com/video-161895864_456241478',
         provider: 'vk',
       },
     ],
@@ -170,7 +170,7 @@ const sources = {
     ratio: '16:9',
     sources: [
       {
-        src: 'https://my.mail.ru/video/embed/9e8c7b6a-5d4f-3e2a-1b0c-9d8e7f6a5b4c',
+        src: 'https://my.mail.ru/video/embed/1234567890',
         provider: 'mailru',
       },
     ],
