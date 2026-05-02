@@ -11,7 +11,6 @@ import {
   assurePlaybackState,
   baseSetup,
   destroy,
-  fetchTitle,
   isOriginAllowed,
 } from './base-embed';
 
@@ -43,7 +42,7 @@ const mailru = {
     baseSetup.call(this, mailru);
   },
 
-  getTitle(videoId) {
+  getTitle() {
     // Mail.ru doesn't have a public API for video metadata
     // Title is fetched from the embed page as fallback
     const player = this;
@@ -73,7 +72,8 @@ const mailru = {
 
     if (videoId.includes('mail/') || videoId.includes('bk/') || videoId.includes('inbox/') || videoId.includes('list.ru/')) {
       embedUrl = `https://api.video.mail.ru/videos/embed/${videoId}`;
-    } else {
+    }
+    else {
       embedUrl = `https://my.mail.ru/video/embed/${videoId}`;
     }
 
@@ -92,7 +92,7 @@ const mailru = {
     iframe.setAttribute('src', `${embedUrl}?${params.join('&')}`);
 
     const wrapper = createElement('div', {
-      className: player.config.classNames.embedContainer,
+      'className': player.config.classNames.embedContainer,
       'data-poster': player.poster,
     });
 
@@ -135,11 +135,13 @@ const mailru = {
 
       try {
         msg = JSON.parse(event.data);
-      } catch {
+      }
+      catch {
         if (is.string(event.data)) {
           try {
             mailru.handleStringEvent.call(player, event.data);
-          } catch (err) {
+          }
+          catch (err) {
             player.debug.error('Mail.ru Video: Error handling string event:', err);
           }
         }
@@ -153,7 +155,8 @@ const mailru = {
 
       try {
         mailru.handleMessage.call(player, msg);
-      } catch (err) {
+      }
+      catch (err) {
         player.debug.error('Mail.ru Video: Error handling message:', err);
       }
     };
@@ -280,9 +283,11 @@ const mailru = {
     if (/\b(?:play|started)\b/i.test(data)) {
       assurePlaybackState.call(player, true);
       triggerEvent.call(player, player.media, 'playing');
-    } else if (/\b(?:pause|paused)\b/i.test(data)) {
+    }
+    else if (/\b(?:pause|paused)\b/i.test(data)) {
       assurePlaybackState.call(player, false);
-    } else if (/\b(?:end|complete|finished)\b/i.test(data)) {
+    }
+    else if (/\b(?:end|complete|finished)\b/i.test(data)) {
       player.media.paused = true;
       triggerEvent.call(player, player.media, 'ended');
     }

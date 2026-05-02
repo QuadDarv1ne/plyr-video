@@ -1,7 +1,7 @@
 // ==========================================================================
 // Rutube plugin
 // ==========================================================================
-import { triggerEvent } from '../utils/events';
+import ui from '../ui';
 import is from '../utils/is';
 import sendCommand from '../utils/post-message';
 import {
@@ -54,10 +54,21 @@ const rutube = {
     const embedUrl = `https://rutube.ru/play/embed/${videoId}/`;
     const params = [];
 
-    if (config.autoplay) params.push('autoplay=true');
-    if (config.quality) params.push(`q=${config.quality}`);
-    if (config.skinColor) params.push(`skinColor=${config.skinColor}`);
-    if (config.stopTime) params.push(`stopTime=${config.stopTime}`);
+    if (config.autoplay) {
+      params.push('autoplay=true');
+    }
+
+    if (config.quality) {
+      params.push(`q=${config.quality}`);
+    }
+
+    if (config.skinColor) {
+      params.push(`skinColor=${config.skinColor}`);
+    }
+
+    if (config.stopTime) {
+      params.push(`stopTime=${config.stopTime}`);
+    }
 
     createEmbed(rutube, {
       player,
@@ -81,8 +92,14 @@ const rutube = {
     }
 
     // Request available qualities and captions
-    player.embed.optionsTimeout = setTimeout(() => sendCommand(player, 'frame:checkOptions'), 1000);
-    player.embed.captionTimeout = setTimeout(() => sendCommand(player, 'player:getCaptions'), 1500);
+    player.embed.optionsTimeout = setTimeout(
+      () => sendCommand(player, 'frame:checkOptions'),
+      1000,
+    );
+    player.embed.captionTimeout = setTimeout(
+      () => sendCommand(player, 'player:getCaptions'),
+      1500,
+    );
 
     // Rebuild UI
     if (config.customControls) {

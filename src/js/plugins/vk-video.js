@@ -4,7 +4,6 @@
 import ui from '../ui';
 import { triggerEvent } from '../utils/events';
 import is from '../utils/is';
-import sendCommand from '../utils/post-message';
 import {
   assurePlaybackState,
   baseSetup,
@@ -13,10 +12,6 @@ import {
   defineMediaProperties,
   destroy,
   fetchTitle,
-  handleCurrentQuality,
-  handleCurrentTime,
-  handleChangeState,
-  isOriginAllowed,
 } from './base-embed';
 
 // Parse VK Video ID from URL
@@ -90,7 +85,8 @@ const vk = {
 
     if (params.length) {
       params.push('js_api=1');
-    } else {
+    }
+    else {
       params.push('js_api=1');
     }
 
@@ -131,21 +127,25 @@ const vk = {
     if (is.string(msg)) {
       eventType = msg.includes(':') ? msg : `vk_video:${msg}`;
       eventData = {};
-    } else if (is.object(msg)) {
+    }
+    else if (is.object(msg)) {
       if (msg.event) {
         eventType = `vk_video:${msg.event}`;
         eventData = msg;
-      } else if (msg.type) {
+      }
+      else if (msg.type) {
         eventType = `vk_video:${msg.type}`;
         eventData = msg;
-      } else {
+      }
+      else {
         if (player.config.debug) {
           player.debug.log('VK Video unknown object event:', msg);
         }
 
         return;
       }
-    } else {
+    }
+    else {
       return;
     }
 

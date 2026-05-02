@@ -63,7 +63,7 @@ export function createEmbed(provider, options) {
   iframe.setAttribute('src', `${embedUrl}?${params.join('&')}`);
 
   const wrapper = createElement('div', {
-    className: player.config.classNames.embedContainer,
+    'className': player.config.classNames.embedContainer,
     'data-poster': player.poster,
   });
   wrapper.appendChild(iframe);
@@ -98,7 +98,8 @@ export function createEmbed(provider, options) {
     let msg;
     try {
       msg = JSON.parse(event.data);
-    } catch {
+    }
+    catch {
       return;
     }
 
@@ -113,7 +114,8 @@ export function createEmbed(provider, options) {
 
     try {
       handleMessage.call(player, msg);
-    } catch (err) {
+    }
+    catch (err) {
       player.debug.error(`${label}: Error handling message:`, err);
     }
   };
@@ -135,7 +137,7 @@ export function createIframeWrapper(player, id, src, poster) {
   iframe.setAttribute('src', src);
 
   const wrapper = createElement('div', {
-    className: player.config.classNames.embedContainer,
+    'className': player.config.classNames.embedContainer,
     'data-poster': poster,
   });
   wrapper.appendChild(iframe);
@@ -400,7 +402,7 @@ export function handlePlayOptionsLoaded(player, data) {
 // Shared quality list handler
 export function handleQualityList(player, data) {
   if (data && Array.isArray(data.list)) {
-    player.embed.availableQualities = data.list.map((q) => Number(q));
+    player.embed.availableQualities = data.list.map(q => Number(q));
     player.debug.log('Available qualities:', player.embed.availableQualities);
   }
 }

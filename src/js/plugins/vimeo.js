@@ -12,8 +12,8 @@ import is from '../utils/is';
 import loadScript from '../utils/load-script';
 import { format, stripHTML } from '../utils/strings';
 import { roundAspectRatio, setAspectRatio } from '../utils/style';
-import { assurePlaybackState } from './base-embed';
 import { buildUrlParams } from '../utils/urls';
+import { assurePlaybackState } from './base-embed';
 
 // Parse Vimeo ID from URL
 function parseId(url) {
@@ -44,12 +44,6 @@ function parseHash(url) {
   const found = url.match(regex);
 
   return found && found.length === 5 ? found[4] : null;
-}
-
-  if (this.media.paused === play) {
-    this.media.paused = !play;
-    triggerEvent.call(this, this.media, play ? 'play' : 'pause');
-  }
 }
 
 const vimeo = {

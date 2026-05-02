@@ -11,8 +11,8 @@ import loadImage from '../utils/load-image';
 import loadScript from '../utils/load-script';
 import { extend } from '../utils/objects';
 import { format, generateId } from '../utils/strings';
-import { assurePlaybackState } from './base-embed';
 import { roundAspectRatio, setAspectRatio } from '../utils/style';
+import { assurePlaybackState } from './base-embed';
 
 // Parse YouTube ID from URL
 function parseId(url) {
@@ -23,12 +23,6 @@ function parseId(url) {
   const regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regex);
   return match && match[2] ? match[2] : url;
-}
-
-  if (this.media.paused === play) {
-    this.media.paused = !play;
-    triggerEvent.call(this, this.media, play ? 'play' : 'pause');
-  }
 }
 
 function getHost(config) {

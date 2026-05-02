@@ -1,7 +1,7 @@
 // ==========================================================================
 // Yandex Cloud Video plugin
 // ==========================================================================
-import { triggerEvent } from '../utils/events';
+import ui from '../ui';
 import is from '../utils/is';
 import sendCommand from '../utils/post-message';
 import {
@@ -53,9 +53,17 @@ const yandex = {
     const embedUrl = `https://video.cloud.yandex.net/player/${videoId}`;
     const params = [];
 
-    if (config.autoplay) params.push('autoplay=true');
-    if (config.muted) params.push('muted=true');
-    if (config.loop) params.push('loop=true');
+    if (config.autoplay) {
+      params.push('autoplay=true');
+    }
+
+    if (config.muted) {
+      params.push('muted=true');
+    }
+
+    if (config.loop) {
+      params.push('loop=true');
+    }
 
     createEmbed(yandex, {
       player,
@@ -74,8 +82,14 @@ const yandex = {
     yandex.getTitle.call(player, videoId);
 
     // Request available qualities and captions
-    player.embed.optionsTimeout = setTimeout(() => sendCommand(player, 'frame:checkOptions'), 1000);
-    player.embed.captionTimeout = setTimeout(() => sendCommand(player, 'player:getCaptions'), 1500);
+    player.embed.optionsTimeout = setTimeout(
+      () => sendCommand(player, 'frame:checkOptions'),
+      1000,
+    );
+    player.embed.captionTimeout = setTimeout(
+      () => sendCommand(player, 'player:getCaptions'),
+      1500,
+    );
 
     // Rebuild UI
     if (config.customControls) {
