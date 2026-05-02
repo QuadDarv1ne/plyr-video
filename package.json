@@ -44,7 +44,10 @@
     "remark": "remark -f --use 'validate-links=repository:\"QuadDarv1ne/plyr-video\"' '{,!(node_modules),.?**/}*.md'",
     "deploy": "pnpm run lint && gulp prepare && gulp build && gulp deploy",
     "spellcheck": "cspell \"**/*.{js,md,scss,json}\" --no-must-find-files",
-    "start": "gulp"
+    "start": "gulp",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "core-js": "^3.45.1",
@@ -66,6 +69,7 @@
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
+    "@vitest/coverage-v8": "^4.1.5",
     "autoprefixer": "^10.4.21",
     "aws-sdk": "^2.1692.0",
     "babel-eslint": "^10.1.0",
@@ -97,6 +101,7 @@
     "gulp-svgstore": "^9.0.0",
     "gulp-terser": "^2.1.0",
     "imagemin-svgo": "^11.0.1",
+    "jsdom": "^29.1.1",
     "mime": "^4.0.7",
     "postcss": "^8.5.6",
     "postcss-custom-properties": "^14.0.6",
@@ -108,6 +113,7 @@
     "stylelint": "^16.23.1",
     "stylelint-config-sass-guidelines": "^12.1.0",
     "stylelint-selector-bem-pattern": "^4.0.1",
-    "through2": "^4.0.2"
+    "through2": "^4.0.2",
+    "vitest": "^3.2.4"
   }
 }

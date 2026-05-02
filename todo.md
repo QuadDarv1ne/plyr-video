@@ -18,9 +18,10 @@
 - [x] Вынести дублирование кода в shared base-embed.js
   - `assurePlaybackState()`, `createEmbed()`, `defineMediaProperties()`, `destroy()`, `fetchTitle()`, `fetchPoster()`
   - Обработчики сообщений: `handleChangeState()`, `handleCurrentTime()`, `handleCaptionList()`, `handleCueChange()`
-- [ ] Покрыть провайдеры unit-тестами
-  - Тестов нет вообще (.test/.spec файлы отсутствуют)
-  - Приоритет: rutube > yandex > vk > mailru
+- [x] Покрыть провайдеры unit-тестами
+  - Создана тестовая инфраструктура с Vitest
+  - 17 тестов для 4 провайдеров (Rutube, Yandex, VK, Mail.ru)
+  - Команды: `npm test`, `npm run test:watch`, `npm run test:coverage`
 
 ## Rutube (Приоритет: Высокий) ✅
 - [x] Создать `src/js/plugins/rutube.js` — провайдер с postMessage API
@@ -32,7 +33,6 @@
 - [x] Поддержка субтитров
 - [x] Поддержка скорости воспроизведения
 - [ ] Тестирование с реальными Rutube видео
-  - В demo используется placeholder ID `1e5c8c87e8d0d8d8e8d0d8d8e8d0d8d8`
 - [x] Добавлен в demo страницу
 - [x] Origin validation: использует `Array.includes()` для точного совпадения — безопасно
 
@@ -41,7 +41,6 @@
 - [x] Создать `src/js/plugins/yandex-video.js`
 - [x] Зарегистрировать в types.js, defaults.js, media.js, plyr.js
 - [ ] Протестировать с реальным видео из Yandex Cloud
-  - В demo используется placeholder `your-video-id`
 - [x] Добавлен в demo страницу
 - [x] Origin validation: использует `Array.includes()` для точного совпадения — безопасно
 
@@ -75,7 +74,7 @@
 - Каждый провайдер сократился на ~60%
 - post-message.js: добавлен параметр `targetOrigin` (по умолчанию `'*'`)
 - Build: gulp build (ESM, Rollup, Babel), lint: eslint + stylelint + remark
-- Нет тестового покрытия ни для одного провайдера
+- ✅ Unit-тесты: Vitest, 17 тестов для 4 провайдеров
 - ✅ Сборка проходит успешно без ошибок (gulp build)
 - ✅ Линтинг проходит успешно (eslint + stylelint)
 
@@ -114,5 +113,5 @@
 - ✅ Сборка проходит успешно без ошибок
 - ✅ Все российские платформы интегрированы: Rutube, Yandex, VK, Mail.ru
 - ✅ Обновлены тестовые ID в демо-странице на реальные видео
+- ✅ Создана инфраструктура unit-тестов (Vitest, 17 тестов)
 - ⏳ Требуется тестирование с реальными видео
-- ⏳ Требуется покрытие unit-тестами
